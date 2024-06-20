@@ -1,0 +1,548 @@
+@model User
+@{
+    Layout = null;
+    ViewData["Title"] = "Home";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>CloSiris</title>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        .navbar-custom {
+            background: url('images/nube.png') no-repeat center center;
+            background-color: #031435;
+            background-size: cover;
+        }
+
+        .custom-padding {
+            margin-left: 10px;
+            /* Definir el margen izquierdo deseado */
+            margin-right: 10px;
+        }
+
+
+
+        .default-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .folder-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .contenNavbar {
+            background-color: #031435
+        }
+
+        .custom-modal .modal-content {
+            background-color: #e3f2fd;
+        }
+
+        .file-details {
+            border-right: 2px solid #000;
+        }
+
+        .file-icon {
+            width: 50px;
+            height: auto;
+        }
+
+        .file-info,
+        .file-preview {
+            padding: 20px;
+        }
+
+        .file-info h5,
+        .file-info p {
+            margin: 0;
+        }
+
+        .file-info hr {
+            border: 1px solid #000;
+        }
+
+        .file-preview img {
+            max-width: 100%;
+            border: 1px solid #000;
+        }
+
+        .modal-footer {
+            justify-content: center;
+        }
+
+        .modal-footer .btn {
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body class="sb-nav-fixed ">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark navbar-custom">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="index.html"><img src="images/LogoC.png" alt="Logo"
+                class="navbar-logo">CloSiris</a>
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
+                class="fas fa-bars"></i></button>
+        <!-- Navbar Search-->
+        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            <div class="input-group">
+                <input class="form-control" type="text" placeholder="Buscar en CloSiris..." aria-label="Search for..."
+                    aria-describedby="btnNavbarSearch" />
+                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i
+                        class="fas fa-search"></i></button>
+            </div>
+        </form>
+        <!-- Navbar-->
+        @{
+            var singleton = Singleton.Instance; // Accede a la instancia del singleton
+        }
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false"><img src='@((singleton.InfoUser == null) ? "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg" : $"data:image/png;base64,{singleton.InfoUser.ImageProfile}")'
+                        class="rounded-circle navbar-logo" ></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#!" data-bs-toggle="modal" data-bs-target="#signupModal">
+                            <i class="fas fa-edit"></i> Editar perfil</a></li>
+                    <li><a class="dropdown-item" href="#!">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark navbar-custom" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Página principal</div>
+
+                        <button type="button"
+                            class="btn btn-primary btn-lg rounded-pill mt-3 dropdown-toggle custom-padding"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-circle-plus"></i>
+                            <span class="btn-text">Nuevo</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#!" data-bs-toggle="modal" data-bs-target="#newFile">
+                                    <i class="fas fa-file"></i> Archivo</a></li>
+                            <li><a class="dropdown-item" href="#!" data-bs-toggle="modal" data-bs-target="#folderModal">
+                                    <i class="fas fa-folder"></i> Carpeta</a></li>
+                        </ul>
+
+                        <div class="sb-sidenav-menu-heading">Archivos</div>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                            data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            Mi unidad
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne"
+                            data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="#" id="toggleCards">Static Navigation</a>
+                            </nav>
+                        </div>
+
+                        <div class="sb-sidenav-menu-heading">Almacenamiento</div>
+                        <a class="nav-link" href="charts.html">
+                            <progress class="my-progress" value="30" max="100"></progress>
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer" data-bs-toggle="modal" data-bs-target="#addFolderModal">
+                    <button type="button" class="btn btn-primary btn-lg rounded-pill mt-3 storage-button">
+                        Obtener más almacenamiento
+                    </button>
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content" class="contenNavbar">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4 text-white">Bienvenido</h1>
+                    <ol class="mb-4">
+                        <p class="text-light-gray">Mi unidad</p>
+                    </ol>
+                    <div class="row" id="cardsContainer">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-filecard text-white mb-4">
+                                <div class="card-body d-flex">
+                                    <div class="col-4">
+                                        <img src="https://img.icons8.com/color/48/000000/pdf.png" alt="Imagen"
+                                            class="img-fluid">
+                                    </div>
+                                    <div class="col-8 text-wrap">
+                                        Texto de la tarjeta.pdf
+                                        <p>76 mb</p>
+                                    </div>
+                                </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#fileDetailsModal">Ver detalles</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Más tarjetas aquí -->
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-filecard text-white mb-4">
+                                <div class="card-body">Warning Card</div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#">View Details</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-filecard text-white mb-4">
+                                <div class="card-body">Success Card</div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#">View Details</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-filecard text-white mb-4">
+                                <div class="card-body">Danger Card</div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#">View Details</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-filecard text-white mb-4">
+                                <div class="card-body">Danger Card</div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#">View Details</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-filecard text-white mb-4">
+                                <div class="card-body">Danger Card</div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#">View Details</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer class="py-4 mt-auto contenNavbar">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; CloSiris 2024</div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    </div>
+
+
+
+    <div class="modal fade" id="folderModal" tabindex="-1" aria-labelledby="folderModalLabel" data-bs-backdrop="static"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: #031435">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center text-white" id="folderModalLabel">Crear Nueva Carpeta</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="folderForm">
+                        <div class="mb-3">
+                            <label for="folderName" class="form-label text-white">Nombre de la Carpeta</label>
+                            <input type="text" class="form-control" id="folderName"
+                                placeholder="Introduce el nombre de la carpeta" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="submitFolderForm()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" data-bs-backdrop="static"
+        aria-hidden="true">
+        @await Html.PartialAsync("_EditProfile")
+    </div>
+
+    <div class="modal fade" id="newFile" tabindex="-1" aria-labelledby="signupModalLabel" data-bs-backdrop="static"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background-color: #031435">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center text-white" id="signupModalLabel">Agregar archivo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <form id="newFileForm" class="w-100">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <!-- Lista de Botones -->
+                                    <div class="mb-4 text-white">
+                                        <p> Lista de carpetas</p>
+                                        <div class="d-flex flex-column">
+                                            <button type="button" class="btn btn-secondary mb-2"
+                                                onclick="selectButton(this)">Carpeta 1</button>
+                                            <button type="button" class="btn btn-secondary mb-2"
+                                                onclick="selectButton(this)">Carpeta 2 2</button>
+                                            <button type="button" class="btn btn-secondary mb-2"
+                                                onclick="selectButton(this)">Carpeta 3</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <!-- Sección de carga de archivo -->
+                                    <div id="fileUploadSection" style="display: none;">
+                                        <div class="d-flex justify-content-center mb-4">
+                                            <div id="selectedPreview"
+                                                style="width: 200px; height: 200px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
+                                                <span>No file chosen</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <div data-mdb-ripple-init class="btn btn-primary btn-sm rounded-pill mt-3">
+                                                <label for="customFile2">Seleccionar archivo</label>
+                                                <input type="file" class="form-control d-none" id="customFile2"
+                                                    onchange="displaySelectedFile(event, 'selectedPreview')" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-center mb-4">
+                                <button type="button" class="btn btn-primary btn-xl rounded-pill mt-3"
+                                    data-bs-dismiss="modal">Guardar cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade custom-modal" id="fileDetailsModal" tabindex="-1" aria-labelledby="fileDetailsLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background-color: #D3EDF6">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fileDetailsLabel">Detalles del archivo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex">
+                    <div class="file-details col-md-6">
+                        <div class="file-info mb-4">
+                            <div class="d-flex align-items-center">
+                                <img src="https://img.icons8.com/color/48/000000/pdf.png" alt="PDF Icon"
+                                    class="file-icon">
+                                <h5 class="ml-2">Proyecto.pdf</h5>
+                            </div>
+                            <hr>
+                            <p class="mb-4"><strong>Tipo:</strong> Pdf</p>
+                            <p class="mb-4"><strong>Tamaño:</strong> 256 KB</p>
+                            <p class="mb-4"><strong>Creado:</strong> 7 Mayo 2024</p>
+                            <p><strong>Usuarios con acceso</strong></p>
+
+                            <div class="d-flex align-items-center">
+                                <img src="https://img.icons8.com/fluency/48/000000/user-male-circle.png" alt="User Icon"
+                                    class="file-icon">
+                                <div class="ml-2">
+                                    <p>Creado por ti. Se compartió con Alejandro Sánchez</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="file-preview col-md-6">
+                        <div>
+                            <div id="fileUploadSectiogn">
+                                <div class="d-flex justify-content-center mb-1">
+                                    <div id="selectedPreview"
+                                        style="width: 290px; height: 360px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
+                                        <img src="https://via.placeholder.com/200x300.png?text=Default+Filer"
+                                            alt="Default Preview" class="default-preview">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger">Eliminar</button>
+                    <button type="button" class="btn btn-primary">Compartir</button>
+                    <button type="button" class="btn btn-success">Descargar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        document.getElementById('toggleCards').addEventListener('click', function () {
+            var cardsContainer = document.getElementById('cardsContainer');
+            if (cardsContainer.style.display === 'none') {
+                cardsContainer.style.display = 'flex';
+            } else {
+                cardsContainer.style.display = 'none';
+            }
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var newFileModal = document.getElementById('newFile');
+
+            newFileModal.addEventListener('hidden.bs.modal', function () {
+                // Restablecer el formulario
+                document.getElementById('newFileForm').reset();
+
+                // Ocultar la sección de carga de archivo
+                document.getElementById('fileUploadSection').style.display = 'none';
+
+                // Desactivar todos los botones
+                var buttons = newFileModal.querySelectorAll('.btn-secondary');
+                buttons.forEach(function (btn) {
+                    btn.classList.remove('active');
+                });
+
+                // Restablecer la vista previa del archivo
+                var preview = document.getElementById('selectedPreview');
+                preview.innerHTML = '<span>No file chosen</span>';
+            });
+        });
+
+        function selectButton(button) {
+            // Desactivar todos los botones
+            var buttons = document.querySelectorAll('.modal-body .btn-secondary');
+            buttons.forEach(function (btn) {
+                btn.classList.remove('active');
+            });
+
+            // Activar el botón seleccionado
+            button.classList.add('active');
+
+            // Habilitar la sección de carga de archivo
+            document.getElementById('fileUploadSection').style.display = 'block';
+        }
+
+        function displaySelectedFile(event, previewId) {
+            var input = event.target;
+            var reader = new FileReader();
+            reader.onload = function () {
+                var preview = document.getElementById(previewId);
+                preview.innerHTML = '';
+                var img = document.createElement('img');
+                img.src = reader.result;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                preview.appendChild(img);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+
+    </script>
+
+
+
+
+    <script>
+        function displaySelectedImage(event, elementId) {
+            const selectedImage = document.getElementById(elementId);
+            const fileInput = event.target;
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    selectedImage.src = e.target.result;
+                };
+
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    </script>
+
+    <script>
+        function displaySelectedFile(event, elementId) {
+            const previewElement = document.getElementById(elementId);
+            const fileInput = event.target;
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                const span = previewElement.querySelector('span');
+                if (span) previewElement.removeChild(span); // Remove the "No file chosen" text
+
+                reader.onload = function (e) {
+                    const fileType = file.type;
+                    if (fileType.startsWith('image/')) {
+                        // Preview image files
+                        previewElement.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;" alt="File preview" />`;
+                    } else if (fileType === 'application/pdf') {
+                        // Preview PDF files
+                        previewElement.innerHTML = `<embed src="${e.target.result}" type="application/pdf" width="100%" height="100%" />`;
+                    } else {
+                        // Preview other files (showing just the name as a placeholder)
+                        previewElement.innerHTML = `<span>${file.name}</span>`;
+                    }
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="js/scripts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="assets/demo/chart-area-demo.js"></script>
+    <script src="assets/demo/chart-bar-demo.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
+        crossorigin="anonymous"></script>
+    <script src="js/datatables-simple-demo.js"></script>
+</body>
+
+
+
+
+
+</html>
