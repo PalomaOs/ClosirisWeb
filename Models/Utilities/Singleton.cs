@@ -19,5 +19,6 @@ namespace closirissystem
 
         public string? Token { get; set; } 
         public UserEdit? InfoUser {get; set; }
+        public string? Email { get; set; }
     }
 }

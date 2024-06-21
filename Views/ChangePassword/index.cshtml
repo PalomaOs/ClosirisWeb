@@ -1,0 +1,70 @@
+@model User
+@{
+    ViewData["Title"] = "Cambiar contraseña";
+}
+
+<body>
+    <div class="containerBackground">
+        <h2 class="text-center" style="color: white; margin-top: 150px;">Cambiar contraseña</h2>
+        <hr />
+
+        <form asp-action="SendEmail" id="sendEmailForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Email" class="form-label pe-2" style="color: white;">Correo</label>
+                    <input asp-for="Email" class="form-control mb-2 email-input" id="emailInput" value="@Model.Email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <button type="submit" class="btn btn-primary mt-2 float-end email-button"
+                        id="sendEmailButton">Enviar</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="row justify-content-center">
+            <div class="col-md-4 mb-3">
+                <label for="Token" class="form-label pe-2" style="color: white;">Token</label>
+                <input type="password" class="form-control mb-2 token-input" id="tokenInput" />
+                <button type="button" class="btn btn-primary mt-2 float-end token-button"
+                    id="validateTokenButton">Validar</button>
+            </div>
+        </div>
+
+        <form asp-action="ChangePassword" id="changePasswordForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row justify-content-center">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Password" class="form-label pe-2" style="color: white;">Nueva contraseña</label>
+                    <input asp-for="Password" class="form-control mb-2 password-input" id="passwordInput" disabled />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <button type="submit" class="btn btn-primary mt-2 float-end password-button"
+                        id="changePasswordButton" disabled>Cambiar</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+        <script>
+            var token = '@Singleton.Instance.Token';
+
+            document.querySelector("#validateTokenButton").addEventListener("click", function () {
+                var tokenInputValue = document.querySelector("#tokenInput").value;
+
+                if (tokenInputValue === token) {
+                    document.querySelector("#emailInput").disabled = true;
+                    document.querySelector("#sendEmailButton").disabled = true;
+                    document.querySelector("#tokenInput").disabled = true;
+                    document.querySelector("#validateTokenButton").disabled = true;
+                    document.querySelector("#passwordInput").disabled = false;
+                    document.querySelector("#changePasswordButton").disabled = false;
+                } else {
+                    alert("El token ingresado es incorrecto.");
+                }
+            });
+        </script>
+    }
+</body>
