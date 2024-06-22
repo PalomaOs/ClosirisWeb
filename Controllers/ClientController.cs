@@ -79,50 +79,14 @@ public class ClientController(UserClientService user, FileClientService file) : 
     {
         if (ModelState.IsValid)
         {
-            if (fileClient == null)
-            {
-                Console.WriteLine("Error: fileClient es null.");
-                return RedirectToAction("Index", "Client");
-            }
-
-            if (fileClient.FileSelected == null)
-            {
-                Console.WriteLine("Error: fileClient.FileSelected es null.");
-                return RedirectToAction("Index", "Client");
-            }
-
-            if (fileClient.FolderName == null)
-            {
-                Console.WriteLine("Error: fileClient.FolderName es null.");
-                return RedirectToAction("Index", "Client");
-            }
-
             try
             {
-
-                var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
-                if (!Directory.Exists(uploads))
-                {
-                    Directory.CreateDirectory(uploads);
-                }
-
-                var fileName = Path.GetFileName(fileClient.FileSelected.FileName);
-                var filePath = Path.Combine(uploads, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await fileClient.FileSelected.CopyToAsync(stream);
-                }
-
-                fileClient.FileName = fileName;
-                fileClient.FilePath = filePath;
+                fileClient.FileName = Path.GetFileName(fileClient.FileSelected.FileName);
                 fileClient.CreationDate = DateTime.Now;
 
-                // Aquí puedes agregar la lógica para guardar la información del archivo en tu base de datos
-
                 var result = await file.PostAsync(fileClient);
-
-
+                int id = (int)Singleton.Instance.IdFileUpload;
+                var result2 = await file.PostAsync(id);
                 return RedirectToAction("Index", "Client");
             }
             catch (Exception ex)
@@ -134,7 +98,6 @@ public class ClientController(UserClientService user, FileClientService file) : 
                 }
             }
         }
-
         return RedirectToAction("Index", "Client");
     }
 

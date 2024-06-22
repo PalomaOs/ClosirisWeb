@@ -21,5 +21,7 @@ namespace closirissystem
         public UserEdit? InfoUser {get; set; }
 
         public string? FileName {get; set;}
+
+        public int? IdFileUpload {get; set;}
     }
 }
