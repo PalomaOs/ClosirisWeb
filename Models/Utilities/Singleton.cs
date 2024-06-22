@@ -19,5 +19,7 @@ namespace closirissystem
 
         public string? Token { get; set; } 
         public UserEdit? InfoUser {get; set; }
+
+        public string? FileName {get; set;}
     }
 }

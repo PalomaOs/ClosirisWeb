@@ -1,4 +1,5 @@
 @model User
+
 @{
     Layout = null;
     ViewData["Title"] = "Home";
@@ -113,8 +114,10 @@
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false"><img src='@((singleton.InfoUser == null) ? "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg" : $"data:image/png;base64,{singleton.InfoUser.ImageProfile}")'
-                        class="rounded-circle navbar-logo" ></a>
+                    aria-expanded="false"><img
+                        src='@((singleton.InfoUser == null) ? "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg" : $"data:image/png;base64,{singleton.InfoUser.ImageProfile}")'
+                        class=" navbar-logo"
+                        style="border-radius: 50%; width: 45px; height: 45px; object-fit: cover;"></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="#!" data-bs-toggle="modal" data-bs-target="#signupModal">
                             <i class="fas fa-edit"></i> Editar perfil</a></li>
@@ -154,7 +157,10 @@
                         <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne"
                             data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="#" id="toggleCards">Static Navigation</a>
+                                @foreach (var item in Model.Folders)
+                                {
+                                    <a class="nav-link">@item</a>
+                                }
                             </nav>
                         </div>
 
@@ -199,51 +205,7 @@
                             </div>
                         </div>
                         <!-- Más tarjetas aquí -->
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-filecard text-white mb-4">
-                                <div class="card-body">Warning Card</div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="#">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-filecard text-white mb-4">
-                                <div class="card-body">Success Card</div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="#">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-filecard text-white mb-4">
-                                <div class="card-body">Danger Card</div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="#">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-filecard text-white mb-4">
-                                <div class="card-body">Danger Card</div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="#">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-filecard text-white mb-4">
-                                <div class="card-body">Danger Card</div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="#">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </main>
@@ -262,33 +224,12 @@
 
     <div class="modal fade" id="folderModal" tabindex="-1" aria-labelledby="folderModalLabel" data-bs-backdrop="static"
         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" style="background-color: #031435">
-                <div class="modal-header">
-                    <h5 class="modal-title text-center text-white" id="folderModalLabel">Crear Nueva Carpeta</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="folderForm">
-                        <div class="mb-3">
-                            <label for="folderName" class="form-label text-white">Nombre de la Carpeta</label>
-                            <input type="text" class="form-control" id="folderName"
-                                placeholder="Introduce el nombre de la carpeta" required>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="submitFolderForm()">Guardar</button>
-                </div>
-            </div>
-        </div>
+        @await Html.PartialAsync("_NewFolder", new File())
     </div>
 
     <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" data-bs-backdrop="static"
         aria-hidden="true">
-        @await Html.PartialAsync("_EditProfile")
+        @await Html.PartialAsync("_EditProfile", new UserEdit())
     </div>
 
     <div class="modal fade" id="newFile" tabindex="-1" aria-labelledby="signupModalLabel" data-bs-backdrop="static"
@@ -300,52 +241,68 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <form id="newFileForm" class="w-100">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <!-- Lista de Botones -->
-                                    <div class="mb-4 text-white">
-                                        <p> Lista de carpetas</p>
-                                        <div class="d-flex flex-column">
-                                            <button type="button" class="btn btn-secondary mb-2"
-                                                onclick="selectButton(this)">Carpeta 1</button>
-                                            <button type="button" class="btn btn-secondary mb-2"
-                                                onclick="selectButton(this)">Carpeta 2 2</button>
-                                            <button type="button" class="btn btn-secondary mb-2"
-                                                onclick="selectButton(this)">Carpeta 3</button>
+                
+                
+                @if (Model.Folders.Count() > 1)
+                {
+                    <div class="modal-body">
+                        <div class="container">
+                            <form id="newFileForm" class="w-100">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <!-- Lista de Botones -->
+                                        <div class="mb-4 text-white">
+                                            <p> Lista de carpetas</p>
+                                            <div class="d-flex flex-column">
+                                                @foreach (var item in Model.Folders)
+                                                {
+                                                    @if(item != "Compartidos"){
+                                                        <button type="button" class="btn btn-secondary mb-2"
+                                                    onclick="selectButton(this)">@item</button>
+                                                    }
+                                                     
+                                                    
+                                                }
+                                               
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <!-- Sección de carga de archivo -->
+                                        <div id="fileUploadSection" style="display: none;">
+                                            <div class="d-flex justify-content-center mb-4">
+                                                <div id="selectedPreview"
+                                                    style="width: 200px; height: 200px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
+                                                    <span>No file chosen</span>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-center">
+                                                <div data-mdb-ripple-init class="btn btn-primary btn-sm rounded-pill mt-3">
+                                                    <label for="customFile2">Seleccionar archivo</label>
+                                                    <input type="file" class="form-control d-none" id="customFile2"
+                                                        onchange="displaySelectedFile(event, 'selectedPreview')" />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <!-- Sección de carga de archivo -->
-                                    <div id="fileUploadSection" style="display: none;">
-                                        <div class="d-flex justify-content-center mb-4">
-                                            <div id="selectedPreview"
-                                                style="width: 200px; height: 200px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
-                                                <span>No file chosen</span>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-center">
-                                            <div data-mdb-ripple-init class="btn btn-primary btn-sm rounded-pill mt-3">
-                                                <label for="customFile2">Seleccionar archivo</label>
-                                                <input type="file" class="form-control d-none" id="customFile2"
-                                                    onchange="displaySelectedFile(event, 'selectedPreview')" />
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <button type="button" class="btn btn-primary btn-xl rounded-pill mt-3"
+                                        data-bs-dismiss="modal">Guardar cambios</button>
                                 </div>
-                            </div>
-
-                            <div class="d-flex justify-content-center mb-4">
-                                <button type="button" class="btn btn-primary btn-xl rounded-pill mt-3"
-                                    data-bs-dismiss="modal">Guardar cambios</button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                }
+                else
+                {
+                    <i class="fa-solid fa-circle-exclamation text-white mt-4 mb-2 fa-4x "></i>
+                    <h5 class="modal-title text-center text-white  mt-4 mb-4" id="folderModalLabel"> Primero necesitas crear
+                        una Carpeta </h5>
+                    
+                }
             </div>
         </div>
     </div>

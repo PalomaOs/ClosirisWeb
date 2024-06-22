@@ -13,6 +13,9 @@ builder.Services.AddHttpClient<AuthClientService>(httpClient => { httpClient.Bas
 builder.Services.AddHttpClient<UserClientService>(httpClient => { httpClient.BaseAddress = new Uri(UrlWebAPI!); })
 .AddHttpMessageHandler<SendBearerDelegatingHandler>()
 .AddHttpMessageHandler<RefreshTokenDelegatingHandler>();
+builder.Services.AddHttpClient<FileClientService>(httpClient => { httpClient.BaseAddress = new Uri(UrlWebAPI!); })
+.AddHttpMessageHandler<SendBearerDelegatingHandler>()
+.AddHttpMessageHandler<RefreshTokenDelegatingHandler>() ;
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>{
     options.Cookie.Name = ".closiris";
