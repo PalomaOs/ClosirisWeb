@@ -59,4 +59,11 @@ public class UserClientService(HttpClient client)
         var response = await client.PatchAsJsonAsync($"api/plan", user);
         return response.IsSuccessStatusCode;
     }
+
+    public async Task<decimal> UpdateFreeStorageAsync(decimal storage)
+    {
+        var data = new { freeStorage = storage };
+        var response = await client.PatchAsJsonAsync($"api/freeStorage", data);
+        return await response.Content.ReadFromJsonAsync<decimal>();
+    }
 }

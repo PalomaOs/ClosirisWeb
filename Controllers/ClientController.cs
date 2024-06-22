@@ -171,4 +171,29 @@ public class ClientController(UserClientService user, FileClientService file) : 
 
         return RedirectToAction("Index", "Client");
     }
+
+    public async Task<decimal> UpdateFreeStorageAsync(decimal storage)
+    {
+        return await user.UpdateFreeStorageAsync(storage);
+    }
+
+    public async Task<string> GetDataFileAsync(int idFile)
+    {
+        return await file.GetDataFileAsync(idFile);
+    }
+
+    public async Task<bool> DeleteFileRegistrationAsync(int idFile)
+    {
+        return await file.DeleteFileRegistrationAsync(idFile);
+    }
+
+    public async Task<bool> DeleteFileFromServerAsync(int idFile)
+    {
+        return await file.DeleteFileFromServerAsync(idFile);
+    }
+
+    public async Task<bool> DeleteFileShared(int idFile)
+    {
+        return await file.DeleteFileShared(idFile);
+    }
 }
