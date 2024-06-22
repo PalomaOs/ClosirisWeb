@@ -18,7 +18,7 @@ public class User
     [Required(ErrorMessage = "El campo {0} es obligatorio.")]
     [DataType(DataType.Password)]
     [Display(Name = "Contraseña")]
-    public required string Password { get; set; }
+    public string? Password { get; set; }
 
 
     public IFormFile? ImageProfileFormFile { get; set; }

@@ -35,8 +35,14 @@ public class AuthController(AuthClientService auth) : Controller
                 };
 
                 auth.LoginAsync(claims);
-
-                return RedirectToAction("Index", "Client");
+                if (token.Role == "Administrador")
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Client");
+                }
             }
             catch (Exception ex)
             {
