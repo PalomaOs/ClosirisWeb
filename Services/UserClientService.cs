@@ -2,6 +2,7 @@ using closirissystem.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using File = closirissystem.Models.File;
 
 namespace closirissystem.Services;
 
@@ -24,6 +25,23 @@ public class UserClientService(HttpClient client)
         var userEdit = await client.GetFromJsonAsync<UserEdit>($"api/userInfo");
         return userEdit;
     }
+
+    public async Task<bool> PutAsync(UserEdit user)
+    {
+        var response = await client.PutAsJsonAsync($"api/userAccount", user);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<User> GetFoldersAsync(){
+        User userClient = new User();
+        var folders = await client.GetFromJsonAsync<List<string>>($"api/folders");
+        
+        folders.Add("Compartidos");
+
+        userClient.Folders = folders;
+        return userClient; 
+    }
+
 
     public async Task<bool> PutAsync(UserEdit user)
     {
