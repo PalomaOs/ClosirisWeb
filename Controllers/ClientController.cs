@@ -11,7 +11,6 @@ namespace closirissystem;
 
 public class ClientController(UserClientService user, FileClientService file) : Controller
 {
-
     [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
@@ -33,8 +32,9 @@ public class ClientController(UserClientService user, FileClientService file) : 
         double usedStoragePercentage = (freeStorageMB / totalStorageMB) * 100;
 
         ViewBag.UsedStoragePercentage = usedStoragePercentage;
-        ViewBag.TotalStorageMB = totalStorageMB; 
+        ViewBag.TotalStorageMB = totalStorageMB;
         ViewBag.FreeStorageMB = freeStorageMB;
+        ViewBag.PlanType = Singleton.Instance.InfoUser.Plan;
 
         return View(userClient);
     }
@@ -152,5 +152,23 @@ public class ClientController(UserClientService user, FileClientService file) : 
         return RedirectToAction("Index", "Client");
     }
 
+    public async Task<IActionResult> UpdateUserPlanAsync(User userModel)
+    {
+        try
+        {
+            var freeStorage = Singleton.Instance.InfoUser.FreeStorage;
+            var differenceStorage = 52428800 - freeStorage;
+            userModel.FreeStorage = (decimal)(104857600 - differenceStorage);
 
+            await user.UpdateUserPlanAsync(userModel);
+
+            return RedirectToAction("Index", "Auth");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
+
+        return RedirectToAction("Index", "Client");
+    }
 }

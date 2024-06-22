@@ -53,4 +53,10 @@ public class UserClientService(HttpClient client)
         var logbooks = await client.GetFromJsonAsync<List<Logbook>>("api/audit");
         return logbooks;
     }
+
+    public async Task<bool> UpdateUserPlanAsync(User user)
+    {
+        var response = await client.PatchAsJsonAsync($"api/plan", user);
+        return response.IsSuccessStatusCode;
+    }
 }

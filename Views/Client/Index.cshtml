@@ -176,13 +176,18 @@
                         </a>
                     </div>
                 </div>
-                <div class="sb-sidenav-footer" data-bs-toggle="modal" data-bs-target="#addFolderModal">
-                    <button type="button" class="btn btn-primary btn-lg rounded-pill mt-3 storage-button">
-                        Obtener más almacenamiento
-                    </button>
-                </div>
+                @if (ViewBag.PlanType == "Básico")
+                {
+                    <div class="sb-sidenav-footer">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#updatePlanModal">
+                            Obtener más Almacenamiento
+                        </button>
+                    </div>
+                }
             </nav>
         </div>
+
         <div id="layoutSidenav_content" class="contenNavbar">
             <main>
                 <div class="container-fluid px-4">
@@ -226,7 +231,10 @@
     </div>
     </div>
 
-
+    <div class="modal fade" id="updatePlanModal" tabindex="-1" aria-labelledby="updatePlanModalLabel"
+        data-bs-backdrop="static" aria-hidden="true">
+        @await Html.PartialAsync("_UpdateUserPlan", new User())
+    </div>
 
     <div class="modal fade" id="folderModal" tabindex="-1" aria-labelledby="folderModalLabel" data-bs-backdrop="static"
         aria-hidden="true">
@@ -370,9 +378,6 @@
         </div>
     </div>
 
-
-
-
     <script>
         document.getElementById('toggleCards').addEventListener('click', function () {
             var cardsContainer = document.getElementById('cardsContainer');
@@ -383,7 +388,6 @@
             }
         });
     </script>
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
