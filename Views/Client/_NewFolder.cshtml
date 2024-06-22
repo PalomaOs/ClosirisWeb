@@ -1,0 +1,104 @@
+@model File
+
+
+
+<div class="modal-dialog">
+    <div class="modal-content" style="background-color: #031435">
+        <div class="modal-header">
+            <h5 class="modal-title text-center text-white" id="folderModalLabel">Crear Nueva Carpeta</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form asp-action="NewFolder" id="folderForm" enctype="multipart/form-data">
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label for="folderName" class="form-label text-white">Nombre de la Carpeta</label>
+                    <input asp-for="FolderName" type="text" class="form-control" id="folderName"
+                        placeholder="Introduce el nombre de la carpeta" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="selectButton2(this)">Continuar</button>
+            </div>
+            <div class="col-md-6">
+                <div id="fileUploadSection2" style="display: none;">
+                    <div class="d-flex justify-content-center mb-4">
+                        <div id="selectedPreview"
+                            style="width: 200px; height: 200px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
+                            <span>No file chosen</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <div data-mdb-ripple-init class="btn btn-primary btn-sm rounded-pill mt-3">
+                            <label asp-for="FileSelected">Seleccionar archivo</label>
+
+                            <input asp-for="FileSelected" class="form-control d-none"
+                                onchange="displaySelectedFile(event, 'selectedPreview')" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary" onclick="submitFolderForm()">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+<script>
+    function setPlanAndStorage(plan) {
+        document.getElementById('name').value = plan;
+    }
+
+    function selectButton2(button) {
+        // Desactivar todos los botones
+        var buttons = document.querySelectorAll('.modal-body .btn-secondary');
+        buttons.forEach(function (btn) {
+            btn.classList.remove('active');
+        });
+
+        // Activar el botón seleccionado
+        button.classList.add('active');
+
+        // Habilitar la sección de carga de archivo
+        document.getElementById('fileUploadSection2').style.display = 'block';
+    }
+
+    function displaySelectedFile(event, elementId) {
+        const previewElement = document.getElementById(elementId);
+        const fileInput = document.querySelector('input[name="FileSelected"]');
+        const file = fileInput.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const fileType = file.type;
+                if (fileType.startsWith('image/')) {
+                    // Preview image files
+                    previewElement.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;" alt="File preview" />`;
+                } else if (fileType === 'application/pdf') {
+                    // Preview PDF files
+                    previewElement.innerHTML = `<embed src="${e.target.result}" type="application/pdf" width="100%" height="100%" />`;
+                } else {
+                    // Preview other files (showing just the name as a placeholder)
+                    previewElement.innerHTML = `<span>${file.name}</span>`;
+                }
+
+                // Almacenar el nombre del archivo en un atributo de datos
+                previewElement.setAttribute('data-file-name', file.name);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Ahora puedes acceder al nombre del archivo desde JavaScript usando el atributo de datos
+    const fileName = document.getElementById('selectedPreview').getAttribute('data-file-name');
+    if (fileName) {
+        // Hacer algo con el nombre del archivo almacenado
+        console.log("Nombre del archivo:", fileName);
+    }
+</script>
