@@ -87,6 +87,11 @@
         .modal-footer .btn {
             margin: 5px;
         }
+
+        .storage-text {
+            margin-left: 20px;
+            color: #ffffff;
+        }
     </style>
 </head>
 
@@ -165,8 +170,9 @@
                         </div>
 
                         <div class="sb-sidenav-menu-heading">Almacenamiento</div>
-                        <a class="nav-link" href="charts.html">
-                            <progress class="my-progress" value="30" max="100"></progress>
+                        <span class="storage-text">@ViewBag.FreeStorageMB MB / @ViewBag.TotalStorageMB MB</span>
+                        <a class="nav-link">
+                            <progress class="my-progress" value="@ViewBag.UsedStoragePercentage" max="100"></progress>
                         </a>
                     </div>
                 </div>
@@ -241,8 +247,8 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
-                
-                
+
+
                 @if (Model.Folders.Count() > 1)
                 {
                     <div class="modal-body">
@@ -256,14 +262,15 @@
                                             <div class="d-flex flex-column">
                                                 @foreach (var item in Model.Folders)
                                                 {
-                                                    @if(item != "Compartidos"){
+                                                    @if (item != "Compartidos")
+                                                    {
                                                         <button type="button" class="btn btn-secondary mb-2"
-                                                    onclick="selectButton(this)">@item</button>
+                                                            onclick="selectButton(this)">@item</button>
                                                     }
-                                                     
-                                                    
+
+
                                                 }
-                                               
+
                                             </div>
                                         </div>
                                     </div>
@@ -301,7 +308,7 @@
                     <i class="fa-solid fa-circle-exclamation text-white mt-4 mb-2 fa-4x "></i>
                     <h5 class="modal-title text-center text-white  mt-4 mb-4" id="folderModalLabel"> Primero necesitas crear
                         una Carpeta </h5>
-                    
+
                 }
             </div>
         </div>

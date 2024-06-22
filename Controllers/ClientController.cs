@@ -19,6 +19,23 @@ public class ClientController(UserClientService user, FileClientService file) : 
         User userClient = new User();
         userClient = await user.GetFoldersAsync();
 
+        int totalStorageMB = 0;
+        if (Singleton.Instance.InfoUser.Plan == "Premium")
+        {
+            totalStorageMB = 100;
+        }
+        else if (Singleton.Instance.InfoUser.Plan == "Básico")
+        {
+            totalStorageMB = 50;
+        }
+
+        double freeStorageMB = (double)Singleton.Instance.InfoUser.FreeStorage / 1048576.0;
+        double usedStoragePercentage = (freeStorageMB / totalStorageMB) * 100;
+
+        ViewBag.UsedStoragePercentage = usedStoragePercentage;
+        ViewBag.TotalStorageMB = totalStorageMB; 
+        ViewBag.FreeStorageMB = freeStorageMB;
+
         return View(userClient);
     }
 
@@ -28,9 +45,6 @@ public class ClientController(UserClientService user, FileClientService file) : 
 
         Singleton.Instance.InfoUser = userClient;
     }
-
-
-
 
     public async Task<IActionResult> EditAsync(UserEdit model)
     {
