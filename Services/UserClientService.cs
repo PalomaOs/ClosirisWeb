@@ -42,13 +42,6 @@ public class UserClientService(HttpClient client)
         return userClient; 
     }
 
-
-    public async Task<bool> PutAsync(UserEdit user)
-    {
-        var response = await client.PutAsJsonAsync($"api/userAccount", user);
-        return response.IsSuccessStatusCode;
-    }
-
     public async Task<List<User>?> GetUsersAsync()
     {
         var users = await client.GetFromJsonAsync<List<User>>("api/users");
