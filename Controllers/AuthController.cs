@@ -8,19 +8,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace closirissystem;
 
-public class AuthController (AuthClientService auth) : Controller {
-
+public class AuthController(AuthClientService auth) : Controller
+{
     [AllowAnonymous]
-    public IActionResult Index(){
+    public IActionResult Index()
+    {
         return View();
     }
 
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> IndexAsync (Login model){
-        if (ModelState.IsValid){
-            try {
+    public async Task<IActionResult> IndexAsync(Login model)
+    {
+        if (ModelState.IsValid)
+        {
+            try
+            {
                 var token = await auth.GetTokenAsync(model.Email, model.Password);
                 var claims = new List<Claim>{
                     new (ClaimTypes.Name, token.Email),
@@ -31,9 +35,17 @@ public class AuthController (AuthClientService auth) : Controller {
                 };
 
                 auth.LoginAsync(claims);
-
-                return RedirectToAction("Index", "Client");
-            }catch(Exception ex){
+                if (token.Role == "Administrador")
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Client");
+                }
+            }
+            catch (Exception ex)
+            {
                 Console.WriteLine($"Exception: {ex.Message}");
                 ModelState.AddModelError("Email", "Credenciales no válidas, inténtelo nuevamente.");
             }
@@ -41,8 +53,9 @@ public class AuthController (AuthClientService auth) : Controller {
         return View(model);
     }
 
-    [Authorize(Roles ="Administrador, Premiun, Básico")]
-    public async Task<IActionResult> SalirAsync(){
+    [Authorize(Roles = "Administrador, Premiun, Básico")]
+    public async Task<IActionResult> SalirAsync()
+    {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Auth");
     }
