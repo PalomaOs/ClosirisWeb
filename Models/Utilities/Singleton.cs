@@ -1,4 +1,5 @@
 using closirissystem.Models;
+using File = closirissystem.Models.File;
 
 namespace closirissystem
 {
@@ -20,8 +21,12 @@ namespace closirissystem
         public string? Token { get; set; } 
         public UserEdit? InfoUser {get; set; }
 
+        public List<File> filesFolder {get; set;}
+
         public string? FileName {get; set;}
 
         public int? IdFileUpload {get; set;}
+
+        public string? Preview {get; set;}
     }
 }

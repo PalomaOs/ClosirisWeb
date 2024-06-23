@@ -15,7 +15,7 @@
 
                 <div class="mb-3">
                     <input  type="text" class="form-control" id="folderName"
-                        placeholder="Introduce el nombre de la carpeta" required>
+                        placeholder="Introduce el nombre de la carpeta" >
                 </div>
                 <button type="button" class="btn btn-primary" onclick="selectButton2(this)" >Continuar</button>
             </div>
@@ -49,7 +49,7 @@
                     <div class="d-flex justify-content-center mb-4">
                         <div id="selectedPreview"
                             style="width: 200px; height: 200px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
-                            <span>No file chosen</span>
+                            <span class="text-white">No file chosen</span>
                         </div>
                     </div>
                     <div class="d-flex justify-content-center">
@@ -126,7 +126,7 @@
                     previewElement.innerHTML = `<embed src="${e.target.result}" type="application/pdf" width="100%" height="100%" />`;
                 } else {
                     // Preview other files (showing just the name as a placeholder)
-                    previewElement.innerHTML = `<span>${file.name}</span>`;
+                    previewElement.innerHTML = `<span class="text-white">${file.name}</span>`;
                 }
 
                 // Almacenar el nombre del archivo en un atributo de datos

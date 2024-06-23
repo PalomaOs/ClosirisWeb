@@ -19,9 +19,6 @@ public class FileClientService(HttpClient client)
                 await stream.CopyToAsync(memoryStream);
                 var fileBytes = memoryStream.ToArray();
 
-                Console.WriteLine($"Archivo a enviar: {file.FileName}");
-                Console.WriteLine($"Tamaño del archivo: {fileBytes.Length} bytes");
-                Console.WriteLine($"Carpeta destino: {file.FolderName}");
 
                 using (var content = new MultipartFormDataContent())
                 {
@@ -30,7 +27,6 @@ public class FileClientService(HttpClient client)
                     client.DefaultRequestHeaders.Remove("folder_name");
                     content.Headers.Add("folder_name", file.FolderName);
 
-                    Console.WriteLine($"Se envia: {content}");
 
                     var response = await client.PostAsync($"api/file", content);
 
@@ -40,7 +36,6 @@ public class FileClientService(HttpClient client)
                         var responseData = JsonConvert.DeserializeObject<dynamic>(responseBody);
                         var fileId = responseData.id;
                         Singleton.Instance.IdFileUpload = fileId;
-                        Console.WriteLine($"ID del archivo creado: {fileId}");
 
                         return true;
                     }
@@ -64,5 +59,25 @@ public class FileClientService(HttpClient client)
         return response.IsSuccessStatusCode;
     }
 
+    public async Task<List<File>>? GetAsync(string folderName)
+    {
+        client.DefaultRequestHeaders.Remove("folder_name");
+        client.DefaultRequestHeaders.Add("folder_name", folderName);
+        var allFiles = await client.GetFromJsonAsync<List<File>>($"api/fileInfo");
 
+
+        return allFiles;
+    }
+
+    public async Task<string> GetDataFileAsync(int idFile)
+    {
+        client.DefaultRequestHeaders.Remove("file_id");
+        client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
+
+        var response = await client.GetAsync($"api/file");
+        var data = await response.Content.ReadAsStringAsync();
+        var responseData = JsonConvert.DeserializeObject<dynamic>(data);
+        var fileBase64 = responseData.fileBase64;
+        return fileBase64;
+    }
 }

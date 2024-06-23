@@ -158,7 +158,7 @@
                             <nav class="sb-sidenav-menu-nested nav">
                                 @foreach (var item in Model.Folders)
                                 {
-                                    <a class="nav-link">@item</a>
+                                    <a class="nav-link" onclick="loadPage('@item')">@item</a>
                                 }
                             </nav>
                         </div>
@@ -178,31 +178,13 @@
         </div>
         <div id="layoutSidenav_content" class="contenNavbar">
             <main>
-                <div class="container-fluid px-4">
+                <div class="container-fluid " id="mainContent" style="margin-left: 0;">
                     <h1 class="mt-4 text-white">Bienvenido</h1>
                     <ol class="mb-4">
                         <p class="text-light-gray">Mi unidad</p>
                     </ol>
                     <div class="row" id="cardsContainer">
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-filecard text-white mb-4">
-                                <div class="card-body d-flex">
-                                    <div class="col-4">
-                                        <img src="https://img.icons8.com/color/48/000000/pdf.png" alt="Imagen"
-                                            class="img-fluid">
-                                    </div>
-                                    <div class="col-8 text-wrap">
-                                        Texto de la tarjeta.pdf
-                                        <p>76 mb</p>
-                                    </div>
-                                </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#fileDetailsModal">Ver detalles</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
+                        
                         <!-- Más tarjetas aquí -->
 
                     </div>
@@ -232,61 +214,7 @@
     </div>
 
 
-    <div class="modal fade custom-modal" id="fileDetailsModal" tabindex="-1" aria-labelledby="fileDetailsLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content" style="background-color: #D3EDF6">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="fileDetailsLabel">Detalles del archivo</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body d-flex">
-                    <div class="file-details col-md-6">
-                        <div class="file-info mb-4">
-                            <div class="d-flex align-items-center">
-                                <img src="https://img.icons8.com/color/48/000000/pdf.png" alt="PDF Icon"
-                                    class="file-icon">
-                                <h5 class="ml-2">Proyecto.pdf</h5>
-                            </div>
-                            <hr>
-                            <p class="mb-4"><strong>Tipo:</strong> Pdf</p>
-                            <p class="mb-4"><strong>Tamaño:</strong> 256 KB</p>
-                            <p class="mb-4"><strong>Creado:</strong> 7 Mayo 2024</p>
-                            <p><strong>Usuarios con acceso</strong></p>
-
-                            <div class="d-flex align-items-center">
-                                <img src="https://img.icons8.com/fluency/48/000000/user-male-circle.png" alt="User Icon"
-                                    class="file-icon">
-                                <div class="ml-2">
-                                    <p>Creado por ti. Se compartió con Alejandro Sánchez</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="file-preview col-md-6">
-                        <div>
-                            <div id="fileUploadSectiogn">
-                                <div class="d-flex justify-content-center mb-1">
-                                    <div id="selectedPreview"
-                                        style="width: 290px; height: 360px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
-                                        <img src="https://via.placeholder.com/200x300.png?text=Default+Filer"
-                                            alt="Default Preview" class="default-preview">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger">Eliminar</button>
-                    <button type="button" class="btn btn-primary">Compartir</button>
-                    <button type="button" class="btn btn-success">Descargar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
 
 
@@ -326,7 +254,35 @@
             });
         });
 
-        
+        function setFolderName(folderName) {
+            document.getElementById('nameFolderSelected').value = folderName;
+        }
+
+        function loadPage( folderName) {
+            var page = 'ListFiles';
+           
+            console.log(`Folder name: ${folderName}`);
+            
+            fetch(`Client/${page}?folderName=${encodeURIComponent(folderName)}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('mainContent').innerHTML = html;
+            })
+            .catch(error => console.error('Error loading page:', error));
+        }
+
+        function loadPageDetails(fileId,  fileName, fileExtension, fileSize, creationDate, folderName) {
+            var page = 'FileInfo';
+           
+            console.log(`Folder name: ${folderName}`);
+           
+           fetch(`Client/${page}?fileId=${fileId}&fileName=${fileName}&fileExtension=${fileExtension}&fileSize=${fileSize}&creationDate=${creationDate}&folderName=${folderName}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('mainContent').innerHTML = html;
+            })
+            .catch(error => console.error('Error loading page:', error));
+        }
 
     </script>
 
