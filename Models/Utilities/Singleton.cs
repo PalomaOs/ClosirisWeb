@@ -24,6 +24,7 @@ namespace closirissystem
         public List<File> filesFolder {get; set;}
 
         public string? FileName {get; set;}
+        public string? Email { get; set; }
 
         public int? IdFileUpload {get; set;}
 

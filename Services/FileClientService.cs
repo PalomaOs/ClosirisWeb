@@ -80,4 +80,31 @@ public class FileClientService(HttpClient client)
         var fileBase64 = responseData.fileBase64;
         return fileBase64;
     }
+
+    public async Task<bool> DeleteFileRegistrationAsync(int idFile)
+    {
+        client.DefaultRequestHeaders.Remove("file_id");
+        client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
+
+        var response = await client.DeleteAsync($"api/file");
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> DeleteFileFromServerAsync(int idFile)
+    {
+        client.DefaultRequestHeaders.Remove("file_id");
+        client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
+
+        var response = await client.DeleteAsync($"api/serverFile");
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> DeleteFileShared(int idFile)
+    {
+        client.DefaultRequestHeaders.Remove("file_id");
+        client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
+
+        var response = await client.DeleteAsync($"api/fileShared");
+        return response.IsSuccessStatusCode;
+    }
 }

@@ -14,13 +14,30 @@ namespace closirissystem;
 
 public class ClientController(UserClientService user, FileClientService file) : Controller
 {
-
     [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
         await GetInfo();
         User userClient = new User();
         userClient = await user.GetFoldersAsync();
+
+        int totalStorageMB = 0;
+        if (Singleton.Instance.InfoUser.Plan == "Premium")
+        {
+            totalStorageMB = 100;
+        }
+        else if (Singleton.Instance.InfoUser.Plan == "Básico")
+        {
+            totalStorageMB = 50;
+        }
+
+        double freeStorageMB = (double)Singleton.Instance.InfoUser.FreeStorage / 1048576.0;
+        double usedStoragePercentage = (freeStorageMB / totalStorageMB) * 100;
+
+        ViewBag.UsedStoragePercentage = usedStoragePercentage;
+        ViewBag.TotalStorageMB = totalStorageMB;
+        ViewBag.FreeStorageMB = freeStorageMB;
+        ViewBag.PlanType = Singleton.Instance.InfoUser.Plan;
 
         return View(userClient);
     }
@@ -32,9 +49,6 @@ public class ClientController(UserClientService user, FileClientService file) : 
 
         Singleton.Instance.InfoUser = userClient;
     }
-
-
-
 
     public async Task<IActionResult> EditAsync(UserEdit model)
     {
@@ -216,5 +230,48 @@ public class ClientController(UserClientService user, FileClientService file) : 
         return icon;
     }
 
+    public async Task<IActionResult> UpdateUserPlanAsync(User userModel)
+    {
+        try
+        {
+            var freeStorage = Singleton.Instance.InfoUser.FreeStorage;
+            var differenceStorage = 52428800 - freeStorage;
+            userModel.FreeStorage = (decimal)(104857600 - differenceStorage);
 
+            await user.UpdateUserPlanAsync(userModel);
+
+            return RedirectToAction("Index", "Auth");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
+
+        return RedirectToAction("Index", "Client");
+    }
+
+    public async Task<decimal> UpdateFreeStorageAsync(decimal storage)
+    {
+        return await user.UpdateFreeStorageAsync(storage);
+    }
+
+    public async Task<string> GetDataFileAsync(int idFile)
+    {
+        return await file.GetDataFileAsync(idFile);
+    }
+
+    public async Task<bool> DeleteFileRegistrationAsync(int idFile)
+    {
+        return await file.DeleteFileRegistrationAsync(idFile);
+    }
+
+    public async Task<bool> DeleteFileFromServerAsync(int idFile)
+    {
+        return await file.DeleteFileFromServerAsync(idFile);
+    }
+
+    public async Task<bool> DeleteFileShared(int idFile)
+    {
+        return await file.DeleteFileShared(idFile);
+    }
 }

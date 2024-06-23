@@ -54,7 +54,28 @@ public class UserClientService(HttpClient client)
         return responseData;
     }
 
+    public async Task<List<User>?> GetUsersAsync()
+    {
+        var users = await client.GetFromJsonAsync<List<User>>("api/users");
+        return users;
+    }
 
+    public async Task<List<Logbook>?> GetLogbooksAsync()
+    {
+        var logbooks = await client.GetFromJsonAsync<List<Logbook>>("api/audit");
+        return logbooks;
+    }
 
+    public async Task<bool> UpdateUserPlanAsync(User user)
+    {
+        var response = await client.PatchAsJsonAsync($"api/plan", user);
+        return response.IsSuccessStatusCode;
+    }
 
+    public async Task<decimal> UpdateFreeStorageAsync(decimal storage)
+    {
+        var data = new { freeStorage = storage };
+        var response = await client.PatchAsJsonAsync($"api/freeStorage", data);
+        return await response.Content.ReadFromJsonAsync<decimal>();
+    }
 }

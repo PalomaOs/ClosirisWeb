@@ -20,8 +20,8 @@ public class User
     [Display(Name = "Contraseña")]
     public  string Password { get; set; }
 
-    
-    public  IFormFile? ImageProfileFormFile { get; set; }
+
+    public IFormFile? ImageProfileFormFile { get; set; }
 
     public string? ImageProfile { get; set; }
     public  decimal FreeStorage { get; set; }
