@@ -26,11 +26,19 @@
     }
 
     .search-bar input[type="text"] {
-        width: 80%; 
+        width: 80%;
         padding: 8px;
         border-radius: 10px;
         border: 1px solid #031435;
         background-color: white;
+    }
+
+    .search-bar button {
+        background-color: #031435;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 10px;
     }
 
     .table {
@@ -64,6 +72,7 @@
 
     <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Buscar por id" onkeyup="searchTable()" />
+        <button onclick="loadPage('AuditReport')">Generar reporte</button>
     </div>
 
     @if (Model == null)
@@ -119,15 +128,15 @@
     function searchTable() {
         var input, filter, table, tr, td, i, txtValue;
         input = document.getElementById("searchInput");
-        filter = input.value.toLowerCase(); 
+        filter = input.value.toLowerCase();
         table = document.getElementById("userTable");
         tr = table.getElementsByTagName("tr");
 
         for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td"); 
+            td = tr[i].getElementsByTagName("td");
             if (td) {
-                txtValue = td[2].textContent || td[2].innerText; 
-                if (txtValue.toLowerCase().includes(filter)) { 
+                txtValue = td[2].textContent || td[2].innerText;
+                if (txtValue.toLowerCase().includes(filter)) {
                     tr[i].style.display = "";
                 } else {
                     tr[i].style.display = "none";

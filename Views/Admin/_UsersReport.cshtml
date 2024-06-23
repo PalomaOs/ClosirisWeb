@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Reporte de usuarios registrados";
+    Layout = null;
+}
+
+<style>
+    body {
+        background-color: #D3EDF6;
+        margin: 0; 
+        padding: 0; 
+    }
+
+    .container {
+        margin: 50px; 
+        padding: 20px;
+        background-color: #D3EDF6;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .pdf-container {
+        width: calc(100% - 40px); 
+        height: calc(100vh - 200px);
+        margin: 20px;
+    }
+
+    object {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<div class="container">
+    <h2>@ViewData["Title"]</h2>
+    <hr />
+
+    <div class="pdf-container">
+        <object data="data:application/pdf;base64,@ViewBag.PdfBase64Users" type="application/pdf">
+            Tu navegador no puede mostrar el archivo PDF.
+        </object>
+    </div>
+</div>
