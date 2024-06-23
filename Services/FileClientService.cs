@@ -81,15 +81,6 @@ public class FileClientService(HttpClient client)
         return fileBase64;
     }
 
-    public async Task<string> GetDataFileAsync(int idFile)
-    {
-        client.DefaultRequestHeaders.Remove("file_id");
-        client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
-
-        var response = await client.GetAsync($"api/file");
-        return await response.Content.ReadAsStringAsync();
-    }
-
     public async Task<bool> DeleteFileRegistrationAsync(int idFile)
     {
         client.DefaultRequestHeaders.Remove("file_id");
