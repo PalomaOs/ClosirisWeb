@@ -4,26 +4,35 @@
     var singleton = Singleton.Instance; // Accede a la instancia del singleton
 }
 
-<body>
-    <div class="container" style="margin-left: 2;">
-        <div class="container-fluid">
-            <h1 class="mt-4 text-white">Detalles del archivo</h1>
-            <ol class="mb-4">
-                <p class="text-light-gray">Mi unidad > @Model.FolderName </p>
-            </ol>
-            <div class="row" id="cardsContainer">
-                <div class="modal-body d-flex">
-                    <div class="file-details col-md-6">
-                        <div class="file-info mb-4">
-                            <div class="d-flex align-items-center">
-                                <img src="@Model.FileImage" alt="Icon" class="file-icon">
-                                <h5 class="ml-2 text-white">@Model.FileName @Model.FileExtension</h5>
-                            </div>
-                            <hr style="background-color: #D3EDF6; border-color: #D3EDF6;">
-                            <p class="mb-4 text-white"><strong>Tipo:</strong> @Model.FileExtension </p>
-                            <p class="mb-4 text-white"><strong>Tamaño:</strong> @Model.FileSize MB</p>
-                            <p class="mb-4 text-white"><strong>Creado:</strong> @ViewBag.CreationDate </p>
-                            <p class="mb-4 text-white"><strong>Usuarios con acceso:</strong> @ViewBag.Share</p>
+<div class="container" style="margin-left: 2;">
+    <div class="container-fluid ">
+        <h1 class="mt-4 text-white">Detalles del archivo</h1>
+        <ol class="mb-4">
+            <p class="text-light-gray">Mi unidad > @Model.FolderName </p>
+        </ol>
+        <div class="row" id="cardsContainer">
+            <div class="modal-body d-flex">
+                <div class="file-details col-md-6">
+                    <div class="file-info mb-4">
+                        <div class="d-flex align-items-center">
+                            <img src=@Model.FileImage alt="Icon" class="file-icon">
+                            <h5 class="ml-2 text-white">@Model.FileName@Model.FileExtension</h5>
+                        </div>
+                        <hr style="background-color: #D3EDF6; border-color: #D3EDF6;">
+                        <p class="mb-4 text-white"><strong>Tipo:</strong> @Model.FileExtension </p>
+                        <p class="mb-4 text-white"><strong>Tamaño:</strong> @Model.FileSize MB</p>
+                        @if (@Model.FolderName != "Compartidos")
+                        {
+                            <p class="mb-4 text-white"><strong>Creado:</strong> @ViewBag.CreationDate</p>
+                            <p class="mb-4 text-white"><strong>Usuarios con acceso: </strong></p>
+                        }
+                        else
+                        {
+                            <p class="mb-4 text-white"><strong>Compartido:</strong> @ViewBag.CreationDate</p>
+                            <p class="mb-4 text-white"><strong>Usuario propietario: </strong></p>
+                        }
+
+
 
                             <div id="shareSection">
                                 <div class="modal-body">

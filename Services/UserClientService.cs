@@ -54,6 +54,17 @@ public class UserClientService(HttpClient client)
         return responseData;
     }
 
+    public async Task<List<User>> GetUserOwnerFileAsync(int idFile){
+        client.DefaultRequestHeaders.Remove("file_id");
+        client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
+
+        
+        var response = await client.GetAsync($"api/usersOwner");
+        var data = await response.Content.ReadAsStringAsync();
+        var responseData = JsonConvert.DeserializeObject<List<User>>(data);;
+        return responseData;
+    }
+
     public async Task<List<User>?> GetUsersAsync()
     {
         var users = await client.GetFromJsonAsync<List<User>>("api/users");
