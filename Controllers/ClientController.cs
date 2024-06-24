@@ -349,6 +349,7 @@ public class ClientController(UserClientService user, FileClientService file) : 
         return RedirectToAction("Index", "Client");
     }
 
+
     public async Task<bool> UpdateFreeStorageAsync(decimal storage)
     {
         return await user.UpdateFreeStorageAsync(storage);

@@ -65,6 +65,7 @@
                             <label asp-for="FileSelected">Seleccionar archivo</label>
 
                             <input asp-for="FileSelected" class="form-control d-none"
+                                accept="image/jpeg, image/png, image/gif, application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, text/plain, text/csv, audio/mpeg, video/mp4"
                                 onchange="displaySelectedFile(event, 'selectedPreview')" />
 
                         </div>
