@@ -9,6 +9,8 @@ public class User
     [Display(Name = "Correo electrónico")]
     public  string Email { get; set; }
 
+    public int Id { get; set; }
+
     [Required(ErrorMessage = "El campo {0} es obligatorio.")]
     [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$", ErrorMessage = "El campo {0} no acepta numeros o caracteres especiales")]
     [Display(Name = "Nombre")]
@@ -20,8 +22,8 @@ public class User
     [Display(Name = "Contraseña")]
     public  string Password { get; set; }
 
-    
-    public  IFormFile? ImageProfileFormFile { get; set; }
+
+    public IFormFile? ImageProfileFormFile { get; set; }
 
     public string? ImageProfile { get; set; }
     public  decimal FreeStorage { get; set; }

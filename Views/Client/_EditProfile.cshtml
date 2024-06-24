@@ -1,7 +1,7 @@
 @model UserEdit
 
 @{
-    var singleton = Singleton.Instance; // Accede a la instancia del singleton
+    var singleton = Singleton.Instance; 
 }
 
 <div class="modal-dialog modal-lg">
@@ -52,7 +52,7 @@
                                 <div class="d-flex justify-content-center mb-4">
 
 
-                                    <img id="selectedAvatar" src='@((singleton.InfoUser == null) ? "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg" : $"data:image/png;base64,{singleton.InfoUser.ImageProfile}")'
+                                    <img id="selectedAvatar" src='@((singleton.InfoUser.ImageProfile == null) ? "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg" : $"data:image/png;base64,{singleton.InfoUser.ImageProfile}")'
                                         class=" navbar-logo"
                                         style="border-radius: 50%; width: 200px; height: 200px; object-fit: cover;"></a>
                                 </div>
@@ -61,7 +61,7 @@
                                     <div data-mdb-ripple-init class="btn btn-primary btn-lg rounded-pill mt-3">
                                         <label asp-for="ImageProfileFormFile">Cambiar imagen</label>
 
-                                        <input asp-for="ImageProfileFormFile" class="form-control d-none"
+                                        <input asp-for="ImageProfileFormFile" accept="image/jpeg, image/png" class="form-control d-none"
                                             onchange="displaySelectedImage(event, 'selectedAvatar')" />
 
                                     </div>

@@ -1,0 +1,141 @@
+@model User
+@{
+    Layout = null;
+    ViewData["Title"] = "AdminHome";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>CloSiris</title>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        .navbar-custom {
+            background: url('images/nube.png') no-repeat center center;
+            background-color: #031435;
+            background-size: cover;
+        }
+
+        .custom-padding {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .default-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .contenNavbar {
+            background-color: #031435;
+        }
+
+        #layoutSidenav {
+            display: flex;
+        }
+
+        #layoutSidenav_nav {
+            width: 100%;
+        }
+
+        .sb-sidenav-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .custom-heading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #D3EDF6;
+            border: 2px solid black;
+            border-radius: 15px;
+            text-align: center;
+            color: black !important;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark navbar-custom">
+        <a class="navbar-brand ps-3" href="index.cshtml"><img src="images/LogoC.png" alt="Logo"
+                class="navbar-logo">CloSiris</a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
+                class="fas fa-bars"></i></button>
+        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            <div class="input-group">
+            </div>
+        </form>
+        @{
+            var singleton = Singleton.Instance;
+        }
+        <li><a class="buttom" asp-controller="Auth" asp-action="Index">
+                <i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
+
+
+    </nav>
+
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark navbar-custom" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Página principal</div>
+                    </div>
+
+                    <div class="sb-sidenav-menu-heading custom-heading" onclick="loadPage('Users')">Usuarios</div>
+
+                    <div class="sb-sidenav-menu-heading custom-heading" onclick="loadPage('Audit')">Auditoria</div>
+                </div>
+            </nav>
+        </div>
+
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4" id="mainContent">
+                    @{
+                        await Html.RenderPartialAsync("_Users");
+                    }
+                </div>
+            </main>
+            <footer class="py-4 mt-auto contenNavbar">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; CloSiris 2024</div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        function loadPage(page) {
+            fetch(`/Admin/${page}`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('mainContent').innerHTML = html;
+                })
+                .catch(error => console.error('Error loading page:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadPage('Users');
+        });
+    </script>
+</body>
+
+</html>

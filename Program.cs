@@ -2,9 +2,7 @@ using closirissystem.Middlewares;
 using closirissystem. Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 var builder = WebApplication.CreateBuilder(args);
-// Agregamos los servicios
 builder.Services.AddControllersWithViews();
-// Soporte para consultar el API
 var UrlWebAPI = builder.Configuration["UrlWebAPI"];
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<SendBearerDelegatingHandler>();
@@ -31,6 +29,8 @@ app.UseExceptionHandler("/Home/Error");
 
 app.UseStaticFiles();
 app.UseRouting();
+
+
 
 app.UseAuthentication();
 app.UseAuthorization();

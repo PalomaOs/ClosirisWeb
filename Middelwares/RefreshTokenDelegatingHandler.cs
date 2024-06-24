@@ -13,7 +13,6 @@ public class RefreshTokenDelegatingHandler(AuthClientService auth, IHttpContextA
             var claims = new List<Claim>{
                 new (ClaimTypes.Name, httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Name)!),
                 new (ClaimTypes.GivenName, httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.GivenName)!),
-               // new (ClaimTypes.UserData, httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.UserData)!),
                 new ("jwt", jwt),
                 new (ClaimTypes.Role, httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Role)!),
             };
