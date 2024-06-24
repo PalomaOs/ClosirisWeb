@@ -83,10 +83,23 @@ public class UserClientService(HttpClient client)
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<decimal> UpdateFreeStorageAsync(decimal storage)
+    public async Task<bool> UpdateFreeStorageAsync(decimal storage)
     {
         var data = new { freeStorage = storage };
         var response = await client.PatchAsJsonAsync($"api/freeStorage", data);
-        return await response.Content.ReadFromJsonAsync<decimal>();
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> ValidateEmailDuplicityAsync(string email)
+    {
+        var response = await client.GetAsync($"/api/emailDuplicity/{email}");
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<User> GetUserInfoByEmailAsync(string email) {
+        var response = await client.GetAsync($"/api/info/{email}");
+        var data = await response.Content.ReadAsStringAsync();
+        var responseData = JsonConvert.DeserializeObject<User>(data);
+        return responseData;
     }
 }

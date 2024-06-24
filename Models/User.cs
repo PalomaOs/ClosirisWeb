@@ -9,6 +9,8 @@ public class User
     [Display(Name = "Correo electrónico")]
     public  string Email { get; set; }
 
+    public int Id { get; set; }
+
     [Required(ErrorMessage = "El campo {0} es obligatorio.")]
     [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$", ErrorMessage = "El campo {0} no acepta numeros o caracteres especiales")]
     [Display(Name = "Nombre")]

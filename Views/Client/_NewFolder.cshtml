@@ -1,5 +1,12 @@
 @model File
-
+@{
+        if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+}
 
 
 <div class="modal-dialog">
@@ -9,41 +16,42 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form asp-action="NewFolder" id="folderForm" enctype="multipart/form-data">
-        @if (Model.Folders.Count() >= 1)
-        {
-            <div class="modal-body">
+            @if (Model.Folders.Count() >= 1)
+            {
+                <div class="modal-body">
 
-                <div class="mb-3">
-                    <input  type="text" class="form-control" id="folderName"
-                        placeholder="Introduce el nombre de la carpeta" >
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="folderName"
+                            placeholder="Introduce el nombre de la carpeta">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="selectButton2(this)">Continuar</button>
                 </div>
-                <button type="button" class="btn btn-primary" onclick="selectButton2(this)" >Continuar</button>
-            </div>
-        }
-        @if (Model.Folders.Count() > 1)
-        {
-            <div class="modal-body">
+            }
+            @if (Model.Folders.Count() > 1)
+            {
+                <div class="modal-body">
 
-                <div class="mb-3">
-                    <label for="folderName" class="form-label text-white">Lista de carpetas</label>
-                    
-                                    <div class="d-flex flex-column">
-                                        @foreach (var item in Model.Folders)
-                                        {
-                                            @if (item != "Compartidos")
-                                            {
-                                                <button type="button" class="btn btn-secondary mb-2" onclick="selectButton2(this, '@item')" >@item</button>
-                                                
-                                            }
+                    <div class="mb-3">
+                        <label for="folderName" class="form-label text-white">Lista de carpetas</label>
+
+                        <div class="d-flex flex-column">
+                            @foreach (var item in Model.Folders)
+                            {
+                                @if (item != "Compartidos")
+                                {
+                                    <button type="button" class="btn btn-secondary mb-2"
+                                        onclick="selectButton2(this, '@item')">@item</button>
+
+                                }
 
 
-                                        }
+                            }
 
-                                    </div>
+                        </div>
+                    </div>
+
                 </div>
-                
-            </div>
-        }
+            }
             <div class="col-md-6">
                 <div id="fileUploadSection2" style="display: none;">
                     <div class="d-flex justify-content-center mb-4">
@@ -65,6 +73,7 @@
             </div>
 
             <input type="hidden" asp-for="FolderName" id="nameFolderSelected" />
+            <input type="hidden" name="fileSize" id="fileSize" />
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -99,14 +108,14 @@
         document.getElementById('fileUploadSection2').style.display = 'block';
 
         if (!folderName) {
-        folderName = document.getElementById('folderName').value;
+            folderName = document.getElementById('folderName').value;
+        }
+
+        // Llamar a la función setFolderName con el valor del input
+        setFolderName(folderName);
     }
 
-    // Llamar a la función setFolderName con el valor del input
-    setFolderName(folderName);
-    }
 
-    
 
     function displaySelectedFile(event, elementId) {
         const previewElement = document.getElementById(elementId);
@@ -131,6 +140,7 @@
 
                 // Almacenar el nombre del archivo en un atributo de datos
                 previewElement.setAttribute('data-file-name', file.name);
+                previewElement.setAttribute('data-file-size', file.size);
             };
 
             reader.readAsDataURL(file);

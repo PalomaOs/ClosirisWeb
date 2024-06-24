@@ -59,6 +59,17 @@ public class FileClientService(HttpClient client)
         return response.IsSuccessStatusCode;
     }
 
+    public async Task<bool> PostAsync(int idUserShared, int idFile)
+    {
+        client.DefaultRequestHeaders.Remove("file_id");
+        client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
+        client.DefaultRequestHeaders.Remove("shared_id");
+        client.DefaultRequestHeaders.Add("shared_id", idUserShared.ToString());
+
+        var response = await client.PostAsync($"api/fileShared", null);
+        return response.IsSuccessStatusCode;
+    }
+    
     public async Task<List<File>>? GetAsync(string folderName)
     {
         client.DefaultRequestHeaders.Remove("folder_name");

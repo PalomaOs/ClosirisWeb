@@ -1,16 +1,12 @@
 using System.Globalization;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
+using System.Text;
 using closirissystem.Models;
 using closirissystem.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using File = closirissystem.Models.File;
 
 namespace closirissystem;
-
 
 public class ClientController(UserClientService user, FileClientService file) : Controller
 {
@@ -34,14 +30,29 @@ public class ClientController(UserClientService user, FileClientService file) : 
         double freeStorageMB = (double)Singleton.Instance.InfoUser.FreeStorage / 1048576.0;
         double usedStoragePercentage = (freeStorageMB / totalStorageMB) * 100;
 
+        double roundedFreeStorageMB = Math.Round(freeStorageMB, 2);
+
         ViewBag.UsedStoragePercentage = usedStoragePercentage;
         ViewBag.TotalStorageMB = totalStorageMB;
-        ViewBag.FreeStorageMB = freeStorageMB;
+        ViewBag.FreeStorageMB = roundedFreeStorageMB;
         ViewBag.PlanType = Singleton.Instance.InfoUser.Plan;
 
         return View(userClient);
     }
+    [HttpPost]
+    public async Task<IActionResult> ValidateEmailDuplicity(string Email, int fileId)
+    {
+        bool isDuplicate = await user.ValidateEmailDuplicityAsync(Email);
+        File fileClient = Singleton.Instance.filesFolder.FirstOrDefault(f => f.Id == fileId);
+        if (isDuplicate)
+        {
+            User userModel = await user.GetUserInfoByEmailAsync(Email);
+            await file.PostAsync(userModel.Id, fileClient.Id);
+            return RedirectToAction("Index", "Client");
+        }
 
+        return RedirectToAction("Index", "Client");
+    }
 
     private async Task GetInfo()
     {
@@ -88,7 +99,6 @@ public class ClientController(UserClientService user, FileClientService file) : 
         return RedirectToAction("Index", "Client");
     }
 
-
     public async Task<IActionResult> NewFolderAsync(File fileClient)
     {
         if (ModelState.IsValid)
@@ -96,10 +106,26 @@ public class ClientController(UserClientService user, FileClientService file) : 
             try
             {
                 fileClient.FileName = Path.GetFileName(fileClient.FileSelected.FileName);
+                fileClient.Size = fileClient.FileSelected.Length.ToString();
                 fileClient.CreationDate = DateTime.Now;
                 var result = await file.PostAsync(fileClient);
                 int id = (int)Singleton.Instance.IdFileUpload;
+
+                decimal? freeStorage = Singleton.Instance.InfoUser.FreeStorage;
+                decimal storageToUpdate = 0;
+
+                if (freeStorage.HasValue)
+                {
+                    if (decimal.TryParse(fileClient.Size, out decimal fileSize))
+                    {
+                        storageToUpdate = freeStorage.Value - fileSize;
+                    }
+                }
+
+                await UpdateFreeStorageAsync(storageToUpdate);
+
                 var result2 = await file.PostAsync(id);
+
                 return RedirectToAction("Index", "Client");
             }
             catch (Exception ex)
@@ -280,6 +306,29 @@ public class ClientController(UserClientService user, FileClientService file) : 
         return icon;
     }
 
+    public async Task<IActionResult> DownloadFileAsync(int fileId)
+    {
+        File fileClient = Singleton.Instance.filesFolder.FirstOrDefault(f => f.Id == fileId);
+
+        if (fileClient == null)
+        {
+            return NotFound();
+        }
+
+        var data = await file.GetDataFileAsync(fileClient.Id);
+
+        if (data == null)
+        {
+            return NotFound();
+        }
+        byte[] fileBytes = Convert.FromBase64String(data);
+
+        string fileNameWithExtension = fileClient.FileName + fileClient.FileExtension;
+
+        return File(fileBytes, "application/octet-stream", fileNameWithExtension);
+    }
+
+
     public async Task<IActionResult> UpdateUserPlanAsync(User userModel)
     {
         try
@@ -300,11 +349,30 @@ public class ClientController(UserClientService user, FileClientService file) : 
         return RedirectToAction("Index", "Client");
     }
 
-    public async Task<decimal> UpdateFreeStorageAsync(decimal storage)
+    public async Task<bool> UpdateFreeStorageAsync(decimal storage)
     {
         return await user.UpdateFreeStorageAsync(storage);
     }
 
+
+    public async Task<IActionResult> DeleteFileAsync(int fileId)
+    {
+        File fileClient = Singleton.Instance.filesFolder.FirstOrDefault(f => f.Id == fileId);
+        decimal.TryParse(fileClient.Size, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var sizeInBytes);
+        decimal storageToUpdate = 0;
+
+        if (Singleton.Instance.InfoUser.FreeStorage.HasValue)
+        {
+            storageToUpdate = Singleton.Instance.InfoUser.FreeStorage.Value + sizeInBytes;
+        }
+
+        await UpdateFreeStorageAsync(storageToUpdate);
+
+        await DeleteFileFromServerAsync(fileId);
+        await DeleteFileRegistrationAsync(fileId);
+
+        return RedirectToAction("Index", "Client");
+    }
 
     public async Task<bool> DeleteFileRegistrationAsync(int idFile)
     {
