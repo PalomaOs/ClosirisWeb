@@ -85,19 +85,12 @@
         </form>
         <!-- Navbar-->
         @{
-            var singleton = Singleton.Instance; 
+            var singleton = Singleton.Instance;
         }
-        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false"><img src="https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg"
-                        class="rounded-circle navbar-logo"></a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#!">
-                            <i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
-                </ul>
-            </li>
-        </ul>
+        <li><a class="buttom" asp-controller="Auth" asp-action="Index">
+                <i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
+
+
     </nav>
 
     <div id="layoutSidenav">

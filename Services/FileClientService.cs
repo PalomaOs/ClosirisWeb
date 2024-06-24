@@ -69,6 +69,42 @@ public class FileClientService(HttpClient client)
         return allFiles;
     }
 
+    public async Task<List<File>> GetFilesSharedAsync()
+    {
+        try
+        {
+            var allFiles = await client.GetFromJsonAsync<List<File>>("api/fileShared");
+
+            if (allFiles != null)
+            {
+                List<File> fileShare = new List<File>();
+
+                foreach (var file in allFiles)
+                {
+                    File files = new File
+                    {
+                        Id = file.Id,
+                        FileName = file.FileName,
+                        FileExtension = file.FileExtension,
+                        Size = file.Size,
+                        CreationDate = file.CreationDate
+                    };
+                    fileShare.Add(files);
+                }
+
+                return fileShare;
+            }
+
+            return new List<File>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            return new List<File>();
+        }
+    }
+
+
     public async Task<string> GetDataFileAsync(int idFile)
     {
         client.DefaultRequestHeaders.Remove("file_id");
@@ -99,7 +135,7 @@ public class FileClientService(HttpClient client)
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> DeleteFileShared(int idFile)
+    public async Task<bool> DeleteFileSharedAsync(int idFile)
     {
         client.DefaultRequestHeaders.Remove("file_id");
         client.DefaultRequestHeaders.Add("file_id", idFile.ToString());

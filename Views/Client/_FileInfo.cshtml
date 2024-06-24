@@ -21,9 +21,18 @@
                         <hr style="background-color: #D3EDF6; border-color: #D3EDF6;">
                         <p class="mb-4 text-white"><strong>Tipo:</strong> @Model.FileExtension </p>
                         <p class="mb-4 text-white"><strong>Tamaño:</strong> @Model.FileSize MB</p>
-                        <p class="mb-4 text-white"><strong>Creado:</strong> @ViewBag.CreationDate
-                        </p>
-                        <p class="mb-4 text-white"><strong>Usuarios con acceso</strong></p>
+                        @if (@Model.FolderName != "Compartidos")
+                        {
+                            <p class="mb-4 text-white"><strong>Creado:</strong> @ViewBag.CreationDate</p>
+                            <p class="mb-4 text-white"><strong>Usuarios con acceso: </strong></p>
+                        }
+                        else
+                        {
+                            <p class="mb-4 text-white"><strong>Compartido:</strong> @ViewBag.CreationDate</p>
+                            <p class="mb-4 text-white"><strong>Usuario propietario: </strong></p>
+                        }
+
+
 
                         <div class="d-flex align-items-center">
 
@@ -68,8 +77,16 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger">Eliminar</button>
-                <button type="button" class="btn btn-primary">Compartir</button>
+                <form asp-action="DeleteFileShared" asp-controller="Client">
+                    <input type="hidden" asp-for="Id" value=@Model.Id />
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+                
+                @if (@ViewBag.IsEnabled == true)
+                {
+                    <button type="button" class="btn btn-primary">Compartir</button>
+                }
+
                 <button type="button" class="btn btn-success">Descargar</button>
             </div>
 

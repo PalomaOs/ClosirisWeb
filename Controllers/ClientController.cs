@@ -48,6 +48,7 @@ public class ClientController(UserClientService user, FileClientService file) : 
         UserEdit userClient = await user.GetAsync();
 
         Singleton.Instance.InfoUser = userClient;
+
     }
 
     public async Task<IActionResult> EditAsync(UserEdit model)
@@ -119,17 +120,29 @@ public class ClientController(UserClientService user, FileClientService file) : 
         File filesUser = new File();
 
         List<File>? allFiles = [];
-        allFiles = await file.GetAsync(folderName);
 
-        foreach (var file in allFiles)
+        if (folderName != "Compartidos")
         {
-            string extension = System.IO.Path.GetExtension(file.FileName).ToLower();
-            file.FileImage = GetIcon(extension);
-            file.FileExtension = extension;
-            file.FileName = System.IO.Path.GetFileNameWithoutExtension(file.FileName);
-            decimal.TryParse(file.Size, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var sizeInBytes);
-            file.FileSize = Math.Round((double)sizeInBytes / 1024, 2);
+            allFiles = await file.GetAsync(folderName);
         }
+        else
+        {
+            allFiles = await file.GetFilesSharedAsync();
+        }
+
+        if (allFiles != null && allFiles.Count > 0)
+        {
+            foreach (var file in allFiles)
+            {
+                string extension = System.IO.Path.GetExtension(file.FileName).ToLower();
+                file.FileImage = GetIcon(extension);
+                file.FileExtension = extension;
+                file.FileName = System.IO.Path.GetFileNameWithoutExtension(file.FileName);
+                decimal.TryParse(file.Size, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var sizeInBytes);
+                file.FileSize = Math.Round((double)sizeInBytes / 1024, 2);
+            }
+        }
+
         Singleton.Instance.filesFolder = allFiles;
         filesUser.FolderName = folderName;
         filesUser.Files = allFiles;
@@ -141,10 +154,19 @@ public class ClientController(UserClientService user, FileClientService file) : 
     public async Task<IActionResult> FileInfo([FromQuery] int fileId, [FromQuery] string fileName, [FromQuery] string fileExtension, [FromQuery] double fileSize, [FromQuery] DateTime creationDate, [FromQuery] string folderName)
 
     {
-        
-        SetInfoShare(fileId);
-        SetCreationDate(fileId);
+        if (folderName != "Compartidos")
+        {
 
+            await SetCreationDateAsync(fileId);
+            await SetInfoOwnerAsync(fileId);
+        }
+        else
+        {
+            await SetCreationDateAsync(fileId);
+            await SetInfoShareAsync(fileId);
+        }
+
+        await EnabledButtonShare(folderName);
         string data = await file.GetDataFileAsync(fileId);
 
         File fileInfo = new File
@@ -160,7 +182,20 @@ public class ClientController(UserClientService user, FileClientService file) : 
         return PartialView("_FileInfo", fileInfo);
     }
 
-    private async void SetInfoShare(int fileId){
+    private async Task EnabledButtonShare(string FolderName)
+    {
+        if (FolderName == "Compartidos" || Singleton.Instance.InfoUser.Plan == "Básico")
+        {
+            ViewBag.IsEnabled = false;
+        }
+        else
+        {
+            ViewBag.IsEnabled = true;
+        }
+    }
+
+    private async Task SetInfoOwnerAsync(int fileId)
+    {
         List<User> users = await user.GetUserShareFileAsync(fileId);
         string usersShare;
         string share = "";
@@ -179,7 +214,22 @@ public class ClientController(UserClientService user, FileClientService file) : 
         ViewBag.Share = usersShare;
     }
 
-    private void SetCreationDate (int fileId){
+    private async Task SetInfoShareAsync(int fileId)
+    {
+        List<User> users = await user.GetUserOwnerFileAsync(fileId);
+        string usersShare;
+        if (users != null && users.Count > 0)
+        {
+            foreach (var user in users)
+            {
+                usersShare = "Compartido por " + user.Name + ".";
+                ViewBag.Share = usersShare;
+            }
+        }
+    }
+
+    private async Task SetCreationDateAsync(int fileId)
+    {
         File fileDate = Singleton.Instance.filesFolder.FirstOrDefault(f => f.Id == fileId);
         DateTime dateTime;
         if (fileDate != null)
@@ -255,10 +305,6 @@ public class ClientController(UserClientService user, FileClientService file) : 
         return await user.UpdateFreeStorageAsync(storage);
     }
 
-    public async Task<string> GetDataFileAsync(int idFile)
-    {
-        return await file.GetDataFileAsync(idFile);
-    }
 
     public async Task<bool> DeleteFileRegistrationAsync(int idFile)
     {
@@ -270,8 +316,10 @@ public class ClientController(UserClientService user, FileClientService file) : 
         return await file.DeleteFileFromServerAsync(idFile);
     }
 
-    public async Task<bool> DeleteFileShared(int idFile)
+    public async Task<IActionResult> DeleteFileShared(File FileClient)
     {
-        return await file.DeleteFileShared(idFile);
+         await file.DeleteFileSharedAsync(FileClient.Id);
+
+         return RedirectToAction("Index", "Client");
     }
 }

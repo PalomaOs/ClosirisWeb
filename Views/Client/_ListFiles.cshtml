@@ -4,55 +4,100 @@
 <div class="container" style="margin-left: 0;">
 
     <script>
-    function loadPageDetails(fileId fileName, fileExtension, fileSize, creationDate, folderName) {
+        function loadPageDetails(fileId fileName, fileExtension, fileSize, creationDate, folderName) {
             var page = 'FileInfo';
-           
+
             console.log(`Folder name: ${folderName}`);
-            
-           fetch(`Client/${page}?fileId=${fileId}&fileName=${fileName}&fileExtension=${fileExtension}&fileSize=${fileSize}&creationDate=${creationDate}&folderName=${folderName}`)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('mainContent').innerHTML = html;
-            })
-            .catch(error => console.error('Error loading page:', error));
+
+            fetch(`Client/${page}?fileId=${fileId}&fileName=${fileName}&fileExtension=${fileExtension}&fileSize=${fileSize}&creationDate=${creationDate}&folderName=${folderName}`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('mainContent').innerHTML = html;
+                })
+                .catch(error => console.error('Error loading page:', error));
         }
-</script>
+
+        function searchCard() {
+            var input, filter, cards, card, i;
+            input = document.getElementById("searchTerm");
+            filter = input.value.toUpperCase();
+
+            cards = document.getElementById("cardsContainer").getElementsByClassName("card");
+
+            for (i = 0; i < cards.length; i++) {
+                card = cards[i];
+                var fileName = card.getAttribute("data-file-name");
+                console.log(`FileName: ${fileName}`); // Agrega este console.log
+
+                if (fileName.toUpperCase().indexOf(filter) > -1) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        }
+    </script>
 
     <div class="container-fluid ">
-        <h1 class="mt-4 text-white">Bienvenido</h1>
-        <ol class="mb-4">
-            <p class="text-light-gray">Mi unidad > @Model.FolderName </p>
-        </ol>
-        <div class="row" id="cardsContainer">
-            @foreach (var item in Model.Files)
-            {
-                <div class="col-xl-3 col-md-6">
-                    <div class="card bg-filecard text-white mb-4" data-file-id="@item.Id">
-                        <div class="card-body d-flex">
-                            <div class="col-4">
-                                <img src=@item.FileImage alt="Imagen" class="img-fluid">
+
+
+
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <div>
+                <h1 class="text-white">Bienvenido</h1>
+                <ol class="mb-4">
+                    <p class="text-light-gray">Mi unidad > @Model.FolderName </p>
+                </ol>
+            </div>
+
+            <form class="form-inline ms-auto me-0 me-md-1 my-2 my-md-0">
+                <div class="input-group">
+                    <input id="searchTerm" class="form-control" type="text" placeholder="Buscar en CloSiris..."
+                        aria-label="Search for..." aria-describedby="btnNavbarSearch" onkeyup="searchCard()" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i
+                            class="fas fa-search"></i></button>
+                </div>
+            </form>
+        </div>
+
+
+        @if (Model.Files.Count > 0)
+        {
+            <div class="row" id="cardsContainer">
+                @foreach (var item in Model.Files)
+                {
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-filecard text-white mb-4" data-file-name="@item.FileName" data-file-id="@item.Id">
+                            <div class="card-body d-flex">
+                                <div class="col-4">
+                                    <img src=@item.FileImage alt="Imagen" class="img-fluid">
+                                </div>
+                                <div class="col-8 text-wrap">
+                                    @item.FileName@item.FileExtension
+                                    <p>@item.FileSize MB</p>
+                                </div>
                             </div>
-                            <div class="col-8 text-wrap">
-                                @item.FileName@item.FileExtension
-                                <p>@item.FileSize MB</p>
+                            <div class="card-footer d-flex align-items-center justify-content-between">
+                                <a class="small text-white stretched-link" href="#" data-bs-toggle="modal"
+                                    onclick="loadPageDetails('@item.Id', '@item.FileName', '@item.FileExtension', '@item.FileSize', '@item.CreationDate', '@Model.FolderName')">Ver
+                                    detalles</a>
+                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                             </div>
-                        </div>
-                        <div class="card-footer d-flex align-items-center justify-content-between">
-                            <a class="small text-white stretched-link" href="#"  data-bs-toggle="modal"
-                                onclick="loadPageDetails('@item.Id', '@item.FileName', '@item.FileExtension', '@item.FileSize', '@item.CreationDate', '@Model.FolderName')" >Ver detalles</a>
-                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column justify-content-center align-items-center" style="height: 50vh;">
+                <i class="fa-solid fa-triangle-exclamation fa-3x text-secondary"></i>
+                <p class="text-secondary">No tienes archivos compartidos</p>
+            </div>
+        }
 
-        </div>
+
     </div>
     </main>
 
 </div>
-
-
-
-
-

@@ -105,12 +105,7 @@
                 class="fas fa-bars"></i></button>
         <!-- Navbar Search-->
         <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-            <div class="input-group">
-                <input class="form-control" type="text" placeholder="Buscar en CloSiris..." aria-label="Search for..."
-                    aria-describedby="btnNavbarSearch" />
-                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i
-                        class="fas fa-search"></i></button>
-            </div>
+            
         </form>
         <!-- Navbar-->
         @{
@@ -120,14 +115,14 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
                     aria-expanded="false"><img
-                        src='@((singleton.InfoUser == null) ? "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg" : $"data:image/png;base64,{singleton.InfoUser.ImageProfile}")'
+                        src='@((singleton.InfoUser.ImageProfile == null) ? "https://mdbootstrap.com/img/Photos/Others/placeholder-avatar.jpg" : $"data:image/png;base64,{singleton.InfoUser.ImageProfile}")'
                         class=" navbar-logo"
                         style="border-radius: 50%; width: 45px; height: 45px; object-fit: cover;"></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="#!" data-bs-toggle="modal" data-bs-target="#signupModal">
                             <i class="fas fa-edit"></i> Editar perfil</a></li>
-                    <li><a class="dropdown-item" href="#!">
-                            <i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
+                    <li><a class="dropdown-item" asp-controller="Auth" asp-action="Index">
+                            <i class="fas fa-sign-out-alt" ></i> Cerrar sesión</a></li>
                 </ul>
             </li>
         </ul>
@@ -146,7 +141,7 @@
                             <span class="btn-text">Nuevo</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            
+
                             <li><a class="dropdown-item" href="#!" data-bs-toggle="modal" data-bs-target="#folderModal">
                                     <i class="fas fa-folder"></i> Archivo</a></li>
                         </ul>
@@ -177,12 +172,12 @@
                 </div>
                 @if (ViewBag.PlanType == "Básico")
                 {
-                    <div class="sb-sidenav-footer">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#updatePlanModal">
-                            Obtener más Almacenamiento
-                        </button>
-                    </div>
+                    
+                    <div class="sb-sidenav-footer" >
+                    <button type="button" class="btn btn-primary btn-lg rounded-pill mt-3 storage-button" data-bs-toggle="modal" data-bs-target="#updatePlanModal">
+                        Obtener más almacenamiento
+                    </button>
+                </div>
                 }
             </nav>
         </div>
@@ -195,8 +190,11 @@
                         <p class="text-light-gray">Mi unidad</p>
                     </ol>
                     <div class="row" id="cardsContainer">
-                        
-                        <!-- Más tarjetas aquí -->
+
+                        <div class="d-flex flex-column justify-content-center align-items-center" style="height: 50vh;">
+                            <i class="fa-solid fa-circle-exclamation fa-3x text-secondary"></i>
+                            <p class="text-secondary">Crea o selecciona una carpeta para iniciar a disfrutar de CloSiris</p>
+                        </div>
 
                     </div>
                 </div>
@@ -219,7 +217,7 @@
 
     <div class="modal fade" id="folderModal" tabindex="-1" aria-labelledby="folderModalLabel" data-bs-backdrop="static"
         aria-hidden="true">
-        @await Html.PartialAsync("_NewFolder", new File{Folders = Model.Folders, FileSelected = null})
+        @await Html.PartialAsync("_NewFolder", new File { Folders = Model.Folders, FileSelected = null })
     </div>
 
     <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" data-bs-backdrop="static"
@@ -228,7 +226,7 @@
     </div>
 
 
-    
+
 
     <script>
         document.getElementById('toggleCards').addEventListener('click', function () {
@@ -268,30 +266,50 @@
             document.getElementById('nameFolderSelected').value = folderName;
         }
 
-        function loadPage( folderName) {
+        function loadPage(folderName) {
             var page = 'ListFiles';
-           
+
             console.log(`Folder name: ${folderName}`);
-            
+
             fetch(`Client/${page}?folderName=${encodeURIComponent(folderName)}`)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('mainContent').innerHTML = html;
-            })
-            .catch(error => console.error('Error loading page:', error));
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('mainContent').innerHTML = html;
+                })
+                .catch(error => console.error('Error loading page:', error));
         }
 
-        function loadPageDetails(fileId,  fileName, fileExtension, fileSize, creationDate, folderName) {
+        function loadPageDetails(fileId, fileName, fileExtension, fileSize, creationDate, folderName) {
             var page = 'FileInfo';
-           
+
             console.log(`Folder name: ${folderName}`);
-           
-           fetch(`Client/${page}?fileId=${fileId}&fileName=${fileName}&fileExtension=${fileExtension}&fileSize=${fileSize}&creationDate=${creationDate}&folderName=${folderName}`)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('mainContent').innerHTML = html;
-            })
-            .catch(error => console.error('Error loading page:', error));
+
+            fetch(`Client/${page}?fileId=${fileId}&fileName=${fileName}&fileExtension=${fileExtension}&fileSize=${fileSize}&creationDate=${creationDate}&folderName=${folderName}`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('mainContent').innerHTML = html;
+                })
+                .catch(error => console.error('Error loading page:', error));
+        }
+
+        function searchCard() {
+            var input, filter, cards, card, i;
+            input = document.getElementById("searchTerm");
+            filter = input.value.toUpperCase();
+
+            cards = document.getElementById("cardsContainer").getElementsByClassName("card");
+
+            for (i = 0; i < cards.length; i++) {
+                card = cards[i];
+                var fileName = card.getAttribute("data-file-name");
+                console.log(`FileName: ${fileName}`); // Agrega este console.log
+
+                if (fileName.toUpperCase().indexOf(filter) > -1) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            }
         }
 
     </script>
