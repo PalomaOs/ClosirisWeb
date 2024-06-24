@@ -356,23 +356,31 @@ public class ClientController(UserClientService user, FileClientService file) : 
     }
 
 
-    public async Task<IActionResult> DeleteFileAsync(int fileId)
+    public async Task<IActionResult> DeleteFileAsync(int fileId, [FromQuery] string folderName)
     {
         File fileClient = Singleton.Instance.filesFolder.FirstOrDefault(f => f.Id == fileId);
         decimal.TryParse(fileClient.Size, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var sizeInBytes);
         decimal storageToUpdate = 0;
 
-        if (Singleton.Instance.InfoUser.FreeStorage.HasValue)
+        if (folderName == "Compartidos")
         {
-            storageToUpdate = Singleton.Instance.InfoUser.FreeStorage.Value + sizeInBytes;
+            await DeleteFileShared(fileClient);
+            return RedirectToAction("Index", "Client");
         }
+        else
+        {
+            if (Singleton.Instance.InfoUser.FreeStorage.HasValue)
+            {
+                storageToUpdate = Singleton.Instance.InfoUser.FreeStorage.Value + sizeInBytes;
+            }
 
-        await UpdateFreeStorageAsync(storageToUpdate);
+            await UpdateFreeStorageAsync(storageToUpdate);
 
-        await DeleteFileFromServerAsync(fileId);
-        await DeleteFileRegistrationAsync(fileId);
+            await DeleteFileFromServerAsync(fileId);
+            await DeleteFileRegistrationAsync(fileId);
 
-        return RedirectToAction("Index", "Client");
+            return RedirectToAction("Index", "Client");
+        }
     }
 
     public async Task<bool> DeleteFileRegistrationAsync(int idFile)
@@ -387,8 +395,8 @@ public class ClientController(UserClientService user, FileClientService file) : 
 
     public async Task<IActionResult> DeleteFileShared(File FileClient)
     {
-         await file.DeleteFileSharedAsync(FileClient.Id);
+        await file.DeleteFileSharedAsync(FileClient.Id);
 
-         return RedirectToAction("Index", "Client");
+        return RedirectToAction("Index", "Client");
     }
 }

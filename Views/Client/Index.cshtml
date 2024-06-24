@@ -27,7 +27,6 @@
 
         .custom-padding {
             margin-left: 10px;
-            /* Definir el margen izquierdo deseado */
             margin-right: 10px;
         }
 
@@ -97,19 +96,15 @@
 
 <body class="sb-nav-fixed ">
     <nav class="sb-topnav navbar navbar-expand navbar-dark navbar-custom">
-        <!-- Navbar Brand-->
         <a class="navbar-brand ps-3" href="index.html"><img src="images/LogoC.png" alt="Logo"
                 class="navbar-logo">CloSiris</a>
-        <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
                 class="fas fa-bars"></i></button>
-        <!-- Navbar Search-->
         <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
             
         </form>
-        <!-- Navbar-->
         @{
-            var singleton = Singleton.Instance; // Accede a la instancia del singleton
+            var singleton = Singleton.Instance; 
         }
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
             <li class="nav-item dropdown">
@@ -244,19 +239,15 @@
             var newFileModal = document.getElementById('newFile');
 
             newFileModal.addEventListener('hidden.bs.modal', function () {
-                // Restablecer el formulario
                 document.getElementById('newFileForm').reset();
 
-                // Ocultar la sección de carga de archivo
                 document.getElementById('fileUploadSection').style.display = 'none';
 
-                // Desactivar todos los botones
                 var buttons = newFileModal.querySelectorAll('.btn-secondary');
                 buttons.forEach(function (btn) {
                     btn.classList.remove('active');
                 });
 
-                // Restablecer la vista previa del archivo
                 var preview = document.getElementById('selectedPreview');
                 preview.innerHTML = '<span>No file chosen</span>';
             });
@@ -302,7 +293,7 @@
             for (i = 0; i < cards.length; i++) {
                 card = cards[i];
                 var fileName = card.getAttribute("data-file-name");
-                console.log(`FileName: ${fileName}`); // Agrega este console.log
+                console.log(`FileName: ${fileName}`); 
 
                 if (fileName.toUpperCase().indexOf(filter) > -1) {
                     card.style.display = "";
@@ -343,18 +334,15 @@
             if (file) {
                 const reader = new FileReader();
                 const span = previewElement.querySelector('span');
-                if (span) previewElement.removeChild(span); // Remove the "No file chosen" text
+                if (span) previewElement.removeChild(span); 
 
                 reader.onload = function (e) {
                     const fileType = file.type;
                     if (fileType.startsWith('image/')) {
-                        // Preview image files
                         previewElement.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;" alt="File preview" />`;
                     } else if (fileType === 'application/pdf') {
-                        // Preview PDF files
                         previewElement.innerHTML = `<embed src="${e.target.result}" type="application/pdf" width="100%" height="100%" />`;
                     } else {
-                        // Preview other files (showing just the name as a placeholder)
                         previewElement.innerHTML = `<span>${file.name}</span>`;
                     }
                 };

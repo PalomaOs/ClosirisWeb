@@ -1,7 +1,7 @@
 @model closirissystem.Models.File
 
 @{
-    var singleton = Singleton.Instance; // Accede a la instancia del singleton
+    var singleton = Singleton.Instance;
 }
 
 <div class="container" style="margin-left: 2;">
@@ -20,7 +20,7 @@
                         </div>
                         <hr style="background-color: #D3EDF6; border-color: #D3EDF6;">
                         <p class="mb-4 text-white"><strong>Tipo:</strong> @Model.FileExtension </p>
-                        <p class="mb-4 text-white"><strong>Tamaño:</strong> @Model.FileSize MB</p>
+                        <p class="mb-4 text-white"><strong>Tamaño:</strong> @Model.FileSize KB</p>
                         @if (@Model.FolderName != "Compartidos")
                         {
                             <p class="mb-4 text-white"><strong>Creado:</strong> @ViewBag.CreationDate</p>
@@ -32,8 +32,15 @@
                             <p class="mb-4 text-white"><strong>Usuario propietario: </strong></p>
                         }
 
+                        <div class="d-flex align-items-center">
 
+                            <div class="ml-2">
+                                <p class="mb-4 text-white">@ViewBag.Share</p>
+                            </div>
+                        </div>
 
+                        @if (ViewBag.IsEnabled == true)
+                        {
                             <div id="shareSection">
                                 <div class="modal-body">
                                     <h5 class="text-white" style="margin-bottom: 10px;">Compartir con</h5>
@@ -42,57 +49,60 @@
                                             method="post">
                                             <div class="mr-3" style="flex: 1;">
                                                 <input type="text" class="form-control" id="shareWithEmail" name="Email"
-                                                    placeholder="Ingrese el correo electrónico" style="width: 350px; margin-top: 10px;">
+                                                    placeholder="Ingrese el correo electrónico"
+                                                    style="width: 350px; margin-top: 10px;">
                                             </div>
-                                            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Compartir</button>
+                                            <button type="submit" class="btn btn-primary"
+                                                style="margin-top: 10px;">Compartir</button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
+                        }
 
-                        </div>
                     </div>
-                    <div class="file-preview col-md-6">
-                        <div>
-                            <div id="fileUploadSection">
-                                <div class="d-flex justify-content-center mb-1">
-                                    <div id="selectedPreview"
-                                        style="width: 290px; height: 360px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
-                                        @if (Model.FileExtension == ".pdf")
-                                        {
-                                            <iframe src="@($"data:application/pdf;base64,{Model.PreviewFile}")"
-                                                style="width: 100%; height: 100%;"></iframe>
-                                        }
-                                        else if (Model.FileExtension == ".png" || Model.FileExtension == ".jpg" ||
-                                        Model.FileExtension == ".jpeg")
-                                        {
-                                            <img src="@($"data:image/{Model.FileExtension};base64,{Model.PreviewFile}")">
-                                        }
-                                        else
-                                        {
-                                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                                <img src="@Model.FileImage" style="height: 150px;">
-                                                <div class="text-wrap text-white"
-                                                    style="width: 210px; overflow-wrap: break-word;">
-                                                    @Model.FileName @Model.FileExtension
-                                                </div>
+                </div>
+                <div class="file-preview col-md-6">
+                    <div>
+                        <div id="fileUploadSection">
+                            <div class="d-flex justify-content-center mb-1">
+                                <div id="selectedPreview"
+                                    style="width: 290px; height: 360px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
+                                    @if (Model.FileExtension == ".pdf")
+                                    {
+                                        <iframe src="@($"data:application/pdf;base64,{Model.PreviewFile}")"
+                                            style="width: 100%; height: 100%;"></iframe>
+                                    }
+                                    else if (Model.FileExtension == ".png" || Model.FileExtension == ".jpg" ||
+                                    Model.FileExtension == ".jpeg")
+                                    {
+                                        <img src="@($"data:image/{Model.FileExtension};base64,{Model.PreviewFile}")">
+                                    }
+                                    else
+                                    {
+                                        <div style="display: flex; flex-direction: column; align-items: center;">
+                                            <img src="@Model.FileImage" style="height: 150px;">
+                                            <div class="text-wrap text-white"
+                                                style="width: 210px; overflow-wrap: break-word;">
+                                                @Model.FileName @Model.FileExtension
                                             </div>
-                                        }
-                                    </div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <form asp-action="DeleteFile" asp-route-fileId="@Model.Id">
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                    </form>
+            </div>
+            <div class="modal-footer">
+                <form asp-action="DeleteFile" asp-route-fileId="@Model.Id" asp-route-folderName="@Model.FolderName">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
 
-                    <form asp-action="DownloadFile" asp-route-fileId="@Model.Id">
-                        <button type="submit" class="btn btn-success">Descargar</button>
-                    </form>
-                </div>
+                <form asp-action="DownloadFile" asp-route-fileId="@Model.Id">
+                    <button type="submit" class="btn btn-success">Descargar</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
